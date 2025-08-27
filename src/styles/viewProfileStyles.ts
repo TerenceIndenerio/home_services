@@ -1,0 +1,108 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    paddingBottom: 40,
+    backgroundColor: "#f9fafb",
+    marginBottom: 50,
+  },
+  section: {
+    padding: 16,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.05)",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  sectionContent: {
+    fontSize: 16,
+    color: "#4b5563",
+  },
+  bookNowButton: {
+    marginTop: 32,
+    alignSelf: "center",
+    backgroundColor: "#3b82f6",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 9999,
+    boxShadow: "0px 0px 6px rgba(0, 0, 0, 0.1)",
+  },
+  bookNowButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  bottomButtonContainer: {
+    position: "absolute",
+    bottom: 20,
+    left: 16,
+    right: 16,
+  },
+  infoCard: {
+    flex: 1,
+    backgroundColor: "#F3F0FF",
+    borderRadius: 18,
+    alignItems: "center",
+    paddingVertical: 14,
+    marginHorizontal: 4,
+    boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.04)",
+  },
+  infoCardValue: {
+    fontWeight: "700",
+    fontSize: 18,
+    marginTop: 4,
+    color: "#222",
+  },
+  infoCardLabel: {
+    fontSize: 13,
+    color: "#888",
+    marginTop: 2,
+  },
+  timeBox: {
+    backgroundColor: "#F3F0FF",
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  timeBoxText: {
+    fontWeight: "700",
+    fontSize: 16,
+    color: "#6B11F4",
+  },
+  bookButton: {
+    marginTop: 28,
+    marginHorizontal: 20,
+    backgroundColor: "#A259FF",
+    borderRadius: 16,
+    alignItems: "center",
+    paddingVertical: 16,
+    boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.04)",
+  },
+  bookButtonText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 18,
+    letterSpacing: 1,
+  },
+  linkedInButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F3F0FF",
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    marginTop: 18,
+    marginHorizontal: 20,
+    alignSelf: "flex-start",
+  },
+  linkedInButtonText: {
+    color: "#0A66C2",
+    fontWeight: "700",
+    fontSize: 15,
+    marginLeft: 8,
+  },
+}); 

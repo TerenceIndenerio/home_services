@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "android": {
+      "package": "com.terenceindenerio.reactnativeapp",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_ANDROID_MAPS_API_KEY"
+        }
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.terenceindenerio.reactnativeapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "This app needs access to location to show job locations on the map."
+      },
+      "config": {
+        "googleMapsApiKey": "YOUR_IOS_MAPS_API_KEY"
+      }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "f6e37012-f287-4661-af85-0297b8887d25"
+      }
+    },
+    "owner": "terence_indenerio",
+    "slug": "react_native",
+    "jsEngine": "jsc"
+  }
+}
