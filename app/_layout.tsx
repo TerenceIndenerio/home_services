@@ -9,7 +9,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { AuthProvider } from "./authentication/context/authContext";
+import { AuthProvider } from "../src/features/auth/context/authContext";
 import { useColorScheme } from "../src/utils/useColorScheme";
 
 export { ErrorBoundary } from "expo-router";
@@ -101,23 +101,20 @@ function RootLayoutNav() {
             name="ViewProfile/index"
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="ViewProfile/1" options={{ headerShown: false }} />
-          <Stack.Screen name="ViewProfile/2" options={{ headerShown: false }} />
-          <Stack.Screen name="ViewProfile/3" options={{ headerShown: false }} />
           <Stack.Screen
             name="SeekerDashboard/SeekerDashboardScreen"
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="AccountProfile/component/AccountProfile"
+            name="AccountProfile/AccountProfileScreen"
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="Messages/components/ChatScreen"
+            name="Messages/ChatScreen"
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="Messages/components/MessagesList"
+            name="Messages/MessagesListScreen"
             options={{ headerShown: false }}
           />
           <Stack.Screen

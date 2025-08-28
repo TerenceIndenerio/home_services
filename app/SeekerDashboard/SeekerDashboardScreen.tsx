@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
-import AvailabilityStatus from './components/AvailabilityStatus';
-import BalanceCard from './components/BalanceCard';
-import BookingRequestsList from './components/BookingRequestsList';
-import BookingHistoryList from './components/BookingHistoryList';
+import BalanceCard from '../../src/features/seeker/components/BalanceCard';
+import BookingRequestsList from '../../src/features/seeker/components/BookingRequestsList';
+import BookingHistoryList from '../../src/features/seeker/components/BookingHistoryList';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Header from './components/Header';
+import Header from '../../src/features/seeker/components/Header';
 
 const mockBookingRequests = [
   {
@@ -72,9 +71,9 @@ const SeekerDashboardScreen: React.FC = () => {
         />
       }
     >
-      <Header status="Not Available" />
+      <Header status="Not Available" onToggleStatus={() => {}} onMenuPress={() => {}} />
       <BalanceCard balance={3200} style={styles.balanceCard} />
-      <BookingRequestsList requests={mockBookingRequests} style={styles.bookingRequestsList} />
+      <BookingRequestsList requests={mockBookingRequests} style={styles.bookingRequestsList} onStatusChange={onRefresh} />
       <BookingHistoryList history={mockBookingHistory} />
     </ScrollView>
   );
