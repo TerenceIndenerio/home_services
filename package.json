@@ -14,6 +14,8 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@ant-design/icons-react-native": "^2.3.2",
+    "@ant-design/react-native": "^5.4.3",
     "@expo-google-fonts/inter": "^0.3.0",
     "@expo/config-plugins": "~10.1.1",
     "@expo/vector-icons": "^14.1.0",
@@ -48,6 +50,7 @@
     "react-native": "0.79.5",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-maps": "1.20.1",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
@@ -57,8 +60,7 @@
     "react-native-web": "^0.20.0",
     "react-native-webview": "13.13.5",
     "typescript": "~5.8.3",
-    "wrap-ansi": "^7.0.0",
-    "react-native-maps": "1.20.1"
+    "wrap-ansi": "^7.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
