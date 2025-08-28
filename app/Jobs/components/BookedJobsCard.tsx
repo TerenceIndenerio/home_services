@@ -10,7 +10,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../../firebaseConfig";
+import { db } from "@/firebaseConfig";
 import { router } from "expo-router";
 
 type Booking = {

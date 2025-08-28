@@ -18,7 +18,7 @@ import { useRouter } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, db, storage } from "../../../../firebaseConfig";
+import { auth, db, storage } from "@/firebaseConfig";
 import ErrorModal from "../components/ErrorModal";
 import { useAuth } from "../context/authContext";
 

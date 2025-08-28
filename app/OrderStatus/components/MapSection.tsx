@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, Platform, Dimensions, Text, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAuth } from "../../authentication/context/authContext";
+import { useAuth } from "@/app/authentication/context/authContext";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 

@@ -3,8 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert 
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { addDoc, collection } from 'firebase/firestore';
-import { db } from '../../../firebaseConfig';
-import { useAuth } from '../authentication/context/authContext';
+import { db } from '@/firebaseConfig';
+import { useAuth } from '@/app/authentication/context/authContext';
 
 const employmentTypes = [
   'Full Time',

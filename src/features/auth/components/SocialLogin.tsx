@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import { loginStyles } from "../../../../src/styles/loginStyles";
+import { loginStyles } from "@/src/styles/loginStyles";
 
 interface SocialLoginProps {
   socialIcons: {

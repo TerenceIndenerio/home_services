@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import MessagesList, { MessageItem } from '../Messages/components/MessagesList';
+import MessagesList, { MessageItem } from '@/app/Messages/components/MessagesList';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 

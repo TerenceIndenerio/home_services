@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { styles } from "../../../../src/styles/onBoardingStyles";
+import { styles } from "@/src/styles/onBoardingStyles";
 
 interface PaginationDotsProps {
   count: number;

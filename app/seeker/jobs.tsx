@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
-import JobSearchBar from '../Jobs/components/JobSearchBar';
-import JobTabBar from '../Jobs/components/JobTabBar';
-import JobCard from '../Jobs/components/JobCard';
-import BookmarkJobsScreen from '../Jobs/BookmarkJobsScreen';
+import JobSearchBar from '@/app/Jobs/components/JobSearchBar';
+import JobTabBar from '@/app/Jobs/components/JobTabBar';
+import JobCard from '@/app/Jobs/components/JobCard';
+import BookmarkJobsScreen from '@/app/Jobs/BookmarkJobsScreen';
 import { useNavigation } from '@react-navigation/native';
 
 const jobsData = [
