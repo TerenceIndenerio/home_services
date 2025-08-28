@@ -6,8 +6,8 @@ import {
   StatusBar,
   Dimensions,
 } from "react-native";
-import Header from "../home/components/Header";
-import MessagesList, { MessageItem } from "../Messages/components/MessagesList";
+import Header from "@/app/home/components/Header";
+import MessagesList, { MessageItem } from "@/app/Messages/components/MessagesList";
 
 import { useRouter } from "expo-router";
 // Chat context for global chat data

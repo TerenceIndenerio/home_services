@@ -8,7 +8,7 @@ import {
     RefreshControl,
 } from "react-native";
 
-import AccountProfile from "../AccountProfile/component/AccountProfile";
+import AccountProfile from "@/app/AccountProfile/component/AccountProfile";
 
 const screenWidth = Dimensions.get("window").width;
 
