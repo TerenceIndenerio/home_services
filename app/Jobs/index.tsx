@@ -1,3 +1,3 @@
-import JobsScreen from '../seeker/jobs';
+import JobsScreen from '@/app/seeker/jobs';
 
 export default JobsScreen; 

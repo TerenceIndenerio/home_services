@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { db } from '@/firebaseConfig';
 import SearchBar from './components/SearchBar';
 import PopularSearchSection from './components/PopularSearchSection';
 import TopServiceSection from './components/TopServiceSection';

@@ -1,3 +1,3 @@
-import AuthGuard from '../../src/features/auth/screens/AuthGuard';
+import AuthGuard from '@/src/features/auth/screens/AuthGuard';
 
 export default AuthGuard;

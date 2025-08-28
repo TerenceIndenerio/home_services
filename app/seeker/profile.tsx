@@ -11,9 +11,9 @@ import Icon from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useRouter } from "expo-router";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
-import { useAuth } from "../authentication/context/authContext";
-import { logout } from "../../src/utils/authUtils";
+import { db } from "@/firebaseConfig";
+import { useAuth } from "@/app/authentication/context/authContext";
+import { logout } from "@/src/utils/authUtils";
 
 const generalItems = [
   { icon: "settings-outline", label: "Settings" },
@@ -113,17 +113,6 @@ const AccountProfile = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Action buttons */}
-        {/* <View style={styles.actionRow}>
-          <TouchableOpacity style={styles.actionBtn}>
-            <FontAwesome name="calendar" size={28} color="#fff" />
-            <Text style={styles.actionLabel}>Bookings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn}>
-            <FontAwesome name="folder-open" size={28} color="#fff" />
-            <Text style={styles.actionLabel}>Jobs Applied</Text>
-          </TouchableOpacity>
-        </View> */}
 
         <TouchableOpacity
             style={styles.seekerButton}

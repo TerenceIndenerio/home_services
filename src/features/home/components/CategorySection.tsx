@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import CategoryItem from "./CategoryItem";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { app } from "../../../../firebaseConfig";
+import { app } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
 
 const db = getFirestore(app);

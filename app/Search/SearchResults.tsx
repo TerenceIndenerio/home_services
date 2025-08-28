@@ -11,7 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp, useRoute, RouteProp } from '@react-navigation/native';
 import { collection, getDocs, query, orderBy, startAt, endAt } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { db } from '@/firebaseConfig';
 import SearchBar from './components/SearchBar';
 import SearchResultCard from './components/SearchResultCard';
 import SearchResultsFilterBar from './components/SearchResultsFilterBar';

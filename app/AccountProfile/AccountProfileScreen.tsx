@@ -11,9 +11,9 @@ import Icon from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useRouter } from "expo-router";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
-import { useAuth } from "../../src/features/auth/context/authContext";
-import { logout } from "../../src/utils/authUtils";
+import { db } from "@/firebaseConfig";
+import { useAuth } from "@/src/features/auth/context/authContext";
+import { logout } from "@/src/utils/authUtils";
 import { getAuth } from "firebase/auth"; // Firebase Auth
 
 const generalItems = [

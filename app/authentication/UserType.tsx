@@ -1,3 +1,3 @@
-import UserType from '../../src/features/auth/screens/UserType';
+import UserType from '@/src/features/auth/screens/UserType';
 
 export default UserType;

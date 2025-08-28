@@ -2,7 +2,7 @@ import * as React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRouter } from "expo-router";
-import SearchBar from "../../../../app/Search/components/SearchBar";
+import SearchBar from "@/app/Search/components/SearchBar";
 
 const Header: React.FC = () => {
   const router = useRouter();

@@ -9,8 +9,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { AuthProvider } from "../src/features/auth/context/authContext";
-import { useColorScheme } from "../src/utils/useColorScheme";
+import { AuthProvider } from "@/src/features/auth/context/authContext";
+import { useColorScheme } from "@/src/utils/useColorScheme";
 import { Provider } from "@ant-design/react-native";
 
 export { ErrorBoundary } from "expo-router";
@@ -21,7 +21,7 @@ export const navigationOptions = {
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/Space_Mono/SpaceMono-Regular.ttf"),
+    SpaceMono: require("@/assets/fonts/Space_Mono/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
 

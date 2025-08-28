@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image } from "react-native";
-import { loginStyles } from "../../../../src/styles/loginStyles";
+import { loginStyles } from "@/src/styles/loginStyles";
 
 interface LoginHeaderProps {
   logoUrl: string;

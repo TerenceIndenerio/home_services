@@ -8,12 +8,12 @@ import {
   signInWithCredential,
 } from "firebase/auth";
 
-import { loginStyles } from "../../../styles/loginStyles";
+import { loginStyles } from "@/src/styles/loginStyles";
 import LoginHeader from "../components/LoginHeader";
 import LoginForm from "../components/LoginForm";
 import SocialLogin from "../components/SocialLogin";
 import { useRouter } from "expo-router";
-import { auth } from "../../../../firebaseConfig";
+import { auth } from "@/firebaseConfig";
 import ErrorModal from "../components/ErrorModal";
 import { useAuth } from "../context/authContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";

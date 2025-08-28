@@ -1,6 +1,6 @@
 import { signOut } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from '../../firebaseConfig';
+import { auth } from '@/firebaseConfig';
 
 export const logout = async () => {
   try {

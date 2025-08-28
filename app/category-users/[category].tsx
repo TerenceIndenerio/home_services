@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, TextInput, ScrollView, RefreshControl } from 'react-native';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
-import { app } from '../../firebaseConfig';
+import { app } from '@/firebaseConfig';
 import { useLocalSearchParams } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import Colors from '../constants/Colors';
-import ServiceCard from '../home/components/ServiceCard';
+import Colors from '@/app/constants/Colors';
+import ServiceCard from '@/app/home/components/ServiceCard';
 
 const db = getFirestore(app);
 
