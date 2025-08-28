@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../../../firebaseConfig';
+import { useAuth } from '../authentication/context/authContext';
 
 const employmentTypes = [
   'Full Time',
@@ -12,9 +15,13 @@ const employmentTypes = [
 
 const AddJobPost: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [description, setDescription] = useState('');
+  const [pay, setPay] = useState('');
   const [skillInput, setSkillInput] = useState('');
   const [skills, setSkills] = useState<string[]>(['Emailing', 'Scheduling', 'Communication Skills']);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
 
   const handleAddSkill = () => {
     if (skillInput.trim() && !skills.includes(skillInput.trim())) {
@@ -27,15 +34,79 @@ const AddJobPost: React.FC = () => {
     setSkills(skills.filter(s => s !== skill));
   };
 
+  const handlePostJob = async () => {
+    if (!user) {
+      Alert.alert('Error', 'You must be logged in to post a job.');
+      return;
+    }
+
+    if (!selectedType || !description || !pay) {
+      Alert.alert('Error', 'Please fill in all fields.');
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, 'jobs'), {
+        jobType: selectedType,
+        description,
+        pay: parseFloat(pay),
+        skills,
+        uid: user.uid,
+        location: 'Placeholder Location', // TODO: Implement location functionality
+        status: 'open',
+        createdAt: new Date(),
+      });
+      Alert.alert('Success', 'Job posted successfully!');
+      router.back();
+    } catch (error) {
+      console.error('Error posting job:', error);
+      Alert.alert('Error', 'There was an error posting the job. Please try again.');
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Text style={styles.label}>What type of Employment?</Text>
-      <TouchableOpacity style={styles.dropdown}>
+      <TouchableOpacity style={styles.dropdown} onPress={() => setDropdownOpen(!isDropdownOpen)}>
         <Text style={{ color: selectedType ? '#222' : '#aaa' }}>
           {selectedType || 'Type of Employment'}
         </Text>
-        {/* Dropdown logic placeholder */}
+        <Ionicons name={isDropdownOpen ? 'chevron-up' : 'chevron-down'} size={20} color="#8F5CFF" />
       </TouchableOpacity>
+      {isDropdownOpen && (
+        <View style={styles.dropdownMenu}>
+          {employmentTypes.map(type => (
+            <TouchableOpacity
+              key={type}
+              style={styles.dropdownItem}
+              onPress={() => {
+                setSelectedType(type);
+                setDropdownOpen(false);
+              }}
+            >
+              <Text>{type}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+      <Text style={[styles.label, { marginTop: 32 }]}>Job Description</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter job description"
+        value={description}
+        onChangeText={setDescription}
+        multiline
+      />
+
+      <Text style={[styles.label, { marginTop: 32 }]}>Offered Pay</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter amount"
+        value={pay}
+        onChangeText={setPay}
+        keyboardType="numeric"
+      />
 
       <Text style={[styles.label, { marginTop: 32 }]}>What skills are you looking for?</Text>
       <View style={styles.skillInputRow}>
@@ -76,8 +147,8 @@ const AddJobPost: React.FC = () => {
         }}>
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.nextBtn}>
-          <Text style={styles.nextText}>Next</Text>
+        <TouchableOpacity style={styles.nextBtn} onPress={handlePostJob}>
+          <Text style={styles.nextText}>Post Job</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -90,6 +161,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 24,
     justifyContent: 'flex-start',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#E5DFFF',
+    borderRadius: 6,
+    padding: 14,
+    marginBottom: 16,
+    backgroundColor: '#FAF8FF',
+    fontSize: 16,
+    color: '#222',
   },
   label: {
     fontSize: 16,
@@ -107,6 +188,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  dropdownMenu: {
+    borderWidth: 1,
+    borderColor: '#E5DFFF',
+    borderRadius: 6,
+    backgroundColor: '#FAF8FF',
+    marginTop: -10,
+  },
+  dropdownItem: {
+    padding: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5DFFF',
   },
   skillInputRow: {
     flexDirection: 'row',
