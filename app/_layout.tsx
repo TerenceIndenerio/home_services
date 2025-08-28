@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { AuthProvider } from "../src/features/auth/context/authContext";
 import { useColorScheme } from "../src/utils/useColorScheme";
+import { Provider } from "@ant-design/react-native";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -47,16 +48,17 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <AuthProvider>
-      <ThemeProvider value={DefaultTheme}>
-        <Stack initialRouteName="(tabs)">
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="seeker" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-          <Stack.Screen
-            name="authentication/OnBoardingScreen"
-            options={{ headerShown: false }}
-          />
+    <Provider>
+      <AuthProvider>
+        <ThemeProvider value={DefaultTheme}>
+          <Stack initialRouteName="(tabs)">
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="seeker" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+            <Stack.Screen
+              name="authentication/OnBoardingScreen"
+              options={{ headerShown: false }}
+            />
           <Stack.Screen
             name="authentication/UserType"
             options={{ headerShown: false }}
@@ -157,5 +159,6 @@ function RootLayoutNav() {
         </Stack>
       </ThemeProvider>
     </AuthProvider>
+    </Provider>
   );
 }
