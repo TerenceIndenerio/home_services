@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, RefreshControl, View, Text } from "react-native";
 import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
-import { useUserDocumentId } from "@/src/hooks/useUserDocumentId";
-import Header from "@/src/features/seeker/components/Header";
-import BalanceCard from "@/src/features/seeker/components/BalanceCard";
-import BookingRequestsList from "@/src/features/seeker/components/BookingRequestsList";
-import BookingHistoryList from "@/src/features/seeker/components/BookingHistoryList";
+import { db } from "../../firebaseConfig";
+import { useUserDocumentId } from "../../src/hooks/useUserDocumentId";
+
+import Header from "../../src/features/seeker/components/Header";
+import BalanceCard from "../../src/features/seeker/components/BalanceCard";
+import BookingRequestsList from "../../src/features/seeker/components/BookingRequestsList";
+import BookingHistoryList from "../../src/features/seeker/components/BookingHistoryList";
 
 type BookingRequest = {
   id: string;

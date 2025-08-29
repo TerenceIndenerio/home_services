@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
-import ChatScreen, { ChatMessage } from './components/ChatScreen';
+import ChatScreen, { ChatMessage } from '@/app/Messages/ChatScreen';
 
 const mockChat: ChatMessage[] = [
   {

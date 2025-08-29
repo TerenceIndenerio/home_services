@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
-import { auth } from "@/firebaseConfig";
+import { auth } from "../../firebaseConfig";
 
 export function useInactivityTimer(timeout: number = 300000) {
   const timer = useRef<NodeJS.Timeout | null>(null);

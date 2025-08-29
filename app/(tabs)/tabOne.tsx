@@ -9,8 +9,8 @@ import {
   FlatList,
   RefreshControl,
 } from "react-native";
-import Header from "@/app/home/components/Header";
-import BookedJobsCard from "@/app/Jobs/components/BookedJobsCard";
+import Header from "../home/components/Header";
+import BookedJobsCard from "../Jobs/components/BookedJobsCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 

@@ -2,14 +2,14 @@
 // This screen allows seekers to edit their profile information, including profile image, name, address, email, mobile number, sex, and professional profile details. It uses reusable components for each section and provides navigation back to the profile page.
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Alert, ActivityIndicator, Text, ScrollView } from 'react-native';
-import ProfileImageSection from '@/app/seekerComponents/editProfile/ProfileImageSection';
-import AboutMeSection from '@/app/seekerComponents/editProfile/AboutMeSection';
-import PersonalInfoSection from '@/app/seekerComponents/editProfile/PersonalInfoSection';
-import ProfileDetailsSection from '@/app/seekerComponents/editProfile/ProfileDetailsSection';
+import ProfileImageSection from '../seekerComponents/editProfile/ProfileImageSection';
+import AboutMeSection from '../seekerComponents/editProfile/AboutMeSection';
+import PersonalInfoSection from '../seekerComponents/editProfile/PersonalInfoSection';
+import ProfileDetailsSection from '../seekerComponents/editProfile/ProfileDetailsSection';
 import { useRouter } from 'expo-router';
-import { useAuth } from '@/app/authentication/context/authContext';
+import { useAuth } from '../authentication/context/authContext';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { db } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DEFAULT_IMAGE = 'https://randomuser.me/api/portraits/men/32.jpg';

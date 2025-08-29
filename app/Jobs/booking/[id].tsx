@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
+import { db } from "../../../firebaseConfig";
 import { Ionicons } from "@expo/vector-icons";
 
 const BookingDetails = () => {

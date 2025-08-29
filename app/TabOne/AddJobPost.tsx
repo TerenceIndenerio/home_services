@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
-import { useAuth } from '@/app/authentication/context/authContext';
+import { useAuth } from '@/src/features/auth/context/authContext';
 
 const employmentTypes = [
   'Full Time',

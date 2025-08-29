@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
-import BookingCard from './components/BookingCard';
+import BookingCard from '@/app/Bookings/components/BookingCard';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
-import BalanceCard from '../../src/features/seeker/components/BalanceCard';
-import BookingRequestsList from '../../src/features/seeker/components/BookingRequestsList';
-import BookingHistoryList from '../../src/features/seeker/components/BookingHistoryList';
+import BalanceCard from '@/src/features/seeker/components/BalanceCard';
+import BookingRequestsList from '@/src/features/seeker/components/BookingRequestsList';
+import BookingHistoryList from '@/src/features/seeker/components/BookingHistoryList';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Header from '../../src/features/seeker/components/Header';
+import Header from '@/src/features/seeker/components/Header';
 
 const mockBookingRequests = [
   {

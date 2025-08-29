@@ -9,7 +9,7 @@ import PinCodeInput from "../components/PinCodeInput";
 import ErrorModal from "../components/ErrorModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { db } from "@/firebaseConfig";
+import { db } from "../../../../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
 interface LoginProps {}

@@ -16,11 +16,11 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { styles as profileStyles } from "@/src/styles/viewProfileStyles";
-import AboutSection from "@/src/features/viewProfile/components/AboutSection";
+import { styles as profileStyles } from "../../../src/styles/viewProfileStyles";
+import AboutSection from "../../../src/features/viewProfile/components/AboutSection";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
-import BookingModal from "@/src/features/viewProfile/components/BookingModal";
+import { db } from "../../../firebaseConfig";
+import BookingModal from "../../../src/features/viewProfile/components/BookingModal";
 
 const ViewProfileById = () => {
   const { id: rawId } = useLocalSearchParams();
