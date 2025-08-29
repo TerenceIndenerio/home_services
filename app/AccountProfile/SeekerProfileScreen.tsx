@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import SeekerProfileInfo from './component/SeekerProfileInfo';
-import SeekerProfileActions from './component/SeekerProfileActions';
+import SeekerProfileInfo from '@/src/features/account/components/SeekerProfileInfo';
+import SeekerProfileActions from '@/src/features/account/components/SeekerProfileActions';
 
 const SeekerProfileScreen: React.FC = () => {
   return (

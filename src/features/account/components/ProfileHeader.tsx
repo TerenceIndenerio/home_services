@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../navigation/AppNavigator';
+import type { RootStackParamList } from '@/app/navigation/AppNavigator';
 import { useRouter } from "expo-router";
 
 const ProfileHeader = () => {

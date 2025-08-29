@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { auth } from "@/firebaseConfig";
+import { auth } from "../../../../firebaseConfig";
 
 type AuthContextType = {
   user: User | null;

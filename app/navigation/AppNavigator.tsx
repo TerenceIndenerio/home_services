@@ -1,8 +1,8 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "@/app/(tabs)"; // Update to your actual home screen
-import SeekerProfileScreen from "@/app/AccountProfile/SeekerProfileScreen";
-import ChatScreen from "@/app/Messages/components/ChatScreen";
+import SeekerProfileScreen from "../AccountProfile/SeekerProfileScreen";
+import ChatScreen from "../Messages/components/ChatScreen";
 
 export type RootStackParamList = {
   Home: undefined;

@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Timestamp, doc, updateDoc } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
+import { db } from "../../../../firebaseConfig";
 import BookingRequestItem from "./BookingRequestItem";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";

@@ -17,8 +17,8 @@ import {
   getDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
-import { useAuth } from "@/app/authentication/context/authContext";
+import { db } from "../../../firebaseConfig";
+import { useAuth } from "../../authentication/context/authContext";
 import { useRouter } from "expo-router";
 
 const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {

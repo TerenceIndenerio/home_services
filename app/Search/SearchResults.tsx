@@ -12,9 +12,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp, useRoute, RouteProp } from '@react-navigation/native';
 import { collection, getDocs, query, orderBy, startAt, endAt } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
-import SearchBar from './components/SearchBar';
-import SearchResultCard from './components/SearchResultCard';
-import SearchResultsFilterBar from './components/SearchResultsFilterBar';
+import SearchBar from '@/app/Search/components/SearchBar';
+import SearchResultCard from '@/app/Search/components/SearchResultCard';
+import SearchResultsFilterBar from '@/app/Search/components/SearchResultsFilterBar';
 import { router } from 'expo-router';
 
 type Provider = {

@@ -10,11 +10,11 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
-import Header from "@/src/features/home/components/Header";
-import PromotionBanner from "@/src/features/home/components/PromotionBanner";
-import CategorySection from "@/src/features/home/components/CategorySection";
-import RecommendedSection from "@/src/features/home/components/RecommendedSection";
-import AuthGuard from "@/app/authentication/AuthGuard";
+import Header from "../components/Header";
+import PromotionBanner from "../components/PromotionBanner";
+import CategorySection from "../components/CategorySection";
+import RecommendedSection from "../components/RecommendedSection";
+import AuthGuard from "../../../../app/authentication/AuthGuard";
 
 const screenWidth = Dimensions.get("window").width;
 

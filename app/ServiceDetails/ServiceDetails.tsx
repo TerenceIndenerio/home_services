@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AuthButton from '../authentication/components/AuthButton';
-import ServiceDetailsDropdown from './components/ServiceDetailsDropdown';
+import AuthButton from '@/src/features/auth/components/AuthButton';
+import ServiceDetailsDropdown from '@/app/ServiceDetails/components/ServiceDetailsDropdown';
 
 const ServiceDetails: React.FC = () => {
   const [detailsOpen, setDetailsOpen] = useState(true);

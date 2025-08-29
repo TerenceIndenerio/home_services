@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import AvailabilityStatus from './AvailabilityStatus';
+import AvailabilityStatus from '@/src/features/seeker/components/AvailabilityStatus';
 
 interface HeaderProps {
   status: 'Available' | 'Not Available';

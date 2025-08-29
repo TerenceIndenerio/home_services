@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
-import { loginStyles } from "@/src/styles/loginStyles";
+import { loginStyles } from "../../../../src/styles/loginStyles";
 
 interface LoginFormProps {
   onLogin: (emailOrPhone: string, password: string) => void;

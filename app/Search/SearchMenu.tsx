@@ -4,9 +4,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
-import SearchBar from './components/SearchBar';
-import PopularSearchSection from './components/PopularSearchSection';
-import TopServiceSection from './components/TopServiceSection';
+import SearchBar from '@/app/Search/components/SearchBar';
+import PopularSearchSection from '@/app/Search/components/PopularSearchSection';
+import TopServiceSection from '@/app/Search/components/TopServiceSection';
 
 const SearchMenu = () => {
   const [searchQuery, setSearchQuery] = useState('');

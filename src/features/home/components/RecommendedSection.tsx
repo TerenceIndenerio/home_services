@@ -8,7 +8,7 @@ import {
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
+import { db } from "../../../../firebaseConfig";
 import ServiceCard from "./ServiceCard";
 
 const RecommendedSection: React.FC = () => {
