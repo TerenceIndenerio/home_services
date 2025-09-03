@@ -3,29 +3,19 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   TouchableOpacity,
-  Switch,
+  Image,
+  Alert,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { db } from "../../firebaseConfig";
 import { useAuth } from "../../src/features/auth/context/authContext";
 import { logout } from "../../src/utils/authUtils";
-import { getAuth } from "firebase/auth"; // Firebase Auth
 
-const generalItems = [
-  { icon: "settings-outline", label: "Settings" },
-  { icon: "call-outline", label: "Contact Us" },
-  { icon: "gift-outline", label: "Refer & Earn" },
-  { icon: "information-circle-outline", label: "About App" },
-  { icon: "help-circle-outline", label: "Help" },
-];
-
-// Simulated API: GET /api/users/:id
-const getUserProfile = async (userId) => {
+const getUserProfile = async (userId: string) => {
   try {
     const userRef = doc(db, "users", userId);
     const snapshot = await getDoc(userRef);
@@ -59,7 +49,6 @@ const AccountProfile = () => {
       if (!userDocumentId) return;
 
       try {
-        // Fetch and log ID Token for authentication if needed
         const auth = getAuth();
         const currentUser = auth.currentUser;
         if (currentUser) {
@@ -67,7 +56,6 @@ const AccountProfile = () => {
           console.log("ID Token (Authorization):", idToken);
         }
 
-        // Simulate GET /api/users/:id
         const userData = await getUserProfile(userDocumentId);
 
         if (userData) {
@@ -81,7 +69,6 @@ const AccountProfile = () => {
             setAvatarUrl(userData.avatarUrl);
           }
         } else {
-          // Create a default user if not found
           const userRef = doc(db, "users", userDocumentId);
           await setDoc(userRef, { isJobSeeker: false });
           setIsJobSeeker(false);
@@ -107,217 +94,234 @@ const AccountProfile = () => {
       await updateDoc(userRef, { isJobSeeker: newValue });
       console.log("Updated isJobSeeker to:", newValue);
 
-      // Log token after update
       const auth = getAuth();
       const currentUser = auth.currentUser;
       if (currentUser) {
         const idToken = await currentUser.getIdToken();
         console.log("ID Token after toggle:", idToken);
       }
+
+      // Redirect based on role
+      if (newValue) {
+        router.push("/seeker/profile");
+      } else {
+        router.push("/ServiceProviderDashboard");
+      }
     } catch (error) {
       console.error("Failed to update isJobSeeker:", error);
+      setIsJobSeeker(!newValue);
+      Alert.alert("Error", "Failed to update role. Please try again.");
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Profile Section */}
       <View style={styles.profileSection}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={styles.avatarContainer}>
           <Image source={{ uri: avatarUrl }} style={styles.avatar} />
-          <View style={{ marginLeft: 12, flex: 1 }}>
-            <Text style={styles.name}>{userName || "Loading..."}</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={styles.verification}>Verification 40%</Text>
-              <Icon
-                name="alert-circle"
-                size={12}
-                color="#D32F2F"
-                style={{ marginLeft: 4 }}
-              />
-            </View>
-            <Text style={styles.subtitle}>
-              Your account is not fully verified
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={styles.editBtn}
-            onPress={() => router.push("/SeekerEditProfileScreen")}
-          >
-            <Icon name="pencil" size={18} color="#8F5CFF" />
-            <View style={styles.badge} />
+          <TouchableOpacity style={styles.editButton}>
+            <Ionicons name="camera" size={16} color="#fff" />
           </TouchableOpacity>
         </View>
-
-        {isJobSeeker && (
-          <TouchableOpacity
-            style={styles.seekerButton}
-            onPress={() => router.push("/seeker")}
-          >
-            <Text style={styles.seekerButtonText}>Go to Seeker Dashboard</Text>
-          </TouchableOpacity>
-        )}
+        <Text style={styles.userName}>{userName || "User Name"}</Text>
+        <Text style={styles.userRole}>
+          {isJobSeeker ? "Job Seeker" : "Service Provider"}
+        </Text>
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={toggleJobSeeker}
+        >
+          <Text style={styles.toggleButtonText}>
+            Switch to {isJobSeeker ? "Service Provider" : "Job Seeker"}
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      {/* General Section */}
-      <View style={styles.generalSection}>
-        <Text style={styles.generalTitle}>General</Text>
-
-        <View style={styles.generalItem}>
-          <Icon
-            name="briefcase-outline"
-            size={22}
-            color="#8F5CFF"
-            style={{ marginRight: 16 }}
-          />
-          <Text style={styles.generalLabel}>Job Seeker</Text>
-          {!loading && (
-            <Switch
-              style={{ marginLeft: "auto" }}
-              value={isJobSeeker}
-              onValueChange={toggleJobSeeker}
-              trackColor={{ false: "#ccc", true: "#8F5CFF" }}
-              thumbColor="#fff"
-            />
-          )}
+      <View style={styles.statsSection}>
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>127</Text>
+          <Text style={styles.statLabel}>Completed Jobs</Text>
         </View>
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>4.8</Text>
+          <Text style={styles.statLabel}>Rating</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>₱125K</Text>
+          <Text style={styles.statLabel}>Total Earnings</Text>
+        </View>
+      </View>
 
-        {generalItems.map((item) => (
-          <TouchableOpacity key={item.label} style={styles.generalItem}>
-            <Icon
-              name={item.icon}
-              size={22}
-              color="#8F5CFF"
-              style={{ marginRight: 16 }}
-            />
-            <Text style={styles.generalLabel}>{item.label}</Text>
-            <Icon
-              name="chevron-forward"
-              size={18}
-              color="#bbb"
-              style={{ marginLeft: "auto" }}
-            />
-          </TouchableOpacity>
-        ))}
-
+      <View style={styles.actionsSection}>
         <TouchableOpacity
-          style={styles.logoutBtn}
-          onPress={async () => {
-            try {
-              await logout();
-              router.replace("/authentication/Login");
-            } catch (error) {
-              console.error("Logout failed:", error);
+          style={styles.actionButton}
+          onPress={() => router.push("/SeekerEditProfileScreen")}
+        >
+          <Ionicons name="create-outline" size={20} color="#8C52FF" />
+          <Text style={styles.actionButtonText}>Edit Profile</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => {
+            if (isJobSeeker) {
+              router.push("/seeker/profile");
+            } else {
+              router.push("/ServiceProviderDashboard");
             }
           }}
         >
-          <Text style={styles.logoutText}>Log out</Text>
+          <Ionicons name="stats-chart-outline" size={20} color="#8C52FF" />
+          <Text style={styles.actionButtonText}>Dashboard</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => router.push("/Messages/MessagesListScreen")}
+        >
+          <Ionicons name="chatbubbles-outline" size={20} color="#8C52FF" />
+          <Text style={styles.actionButtonText}>Messages</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => router.push("/Bookings")}
+        >
+          <Ionicons name="calendar-outline" size={20} color="#8C52FF" />
+          <Text style={styles.actionButtonText}>Bookings</Text>
         </TouchableOpacity>
       </View>
+
+      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+        <Ionicons name="log-out-outline" size={20} color="#FF6B6B" />
+        <Text style={styles.logoutButtonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F8F6FF" },
+  container: {
+    flex: 1,
+    backgroundColor: "#F8F6FF",
+    padding: 20,
+  },
   profileSection: {
-    backgroundColor: "#EAE6FF",
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    paddingBottom: 32,
-    paddingTop: 32,
-    paddingHorizontal: 20,
-    marginBottom: 12,
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  avatarContainer: {
+    position: "relative",
+    marginBottom: 16,
   },
   avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    borderWidth: 2,
-    borderColor: "#fff",
-    backgroundColor: "#fff",
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 4,
+    borderColor: "#8C52FF",
   },
-  name: { fontSize: 18, fontWeight: "bold", color: "#222" },
-  verification: { fontSize: 13, color: "#8F5CFF", fontWeight: "600" },
-  subtitle: { fontSize: 12, color: "#D32F2F", marginTop: 2 },
-  editBtn: {
-    marginLeft: 10,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 10,
-    position: "relative",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-  },
-  badge: {
+  editButton: {
     position: "absolute",
-    top: 6,
-    right: 6,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#D32F2F",
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
-  seekerButton: {
-    marginTop: 12,
-    marginHorizontal: 16,
-    backgroundColor: "#8F5CFF",
-    borderRadius: 8,
-    paddingVertical: 12,
+    bottom: 0,
+    right: 0,
+    backgroundColor: "#8C52FF",
+    borderRadius: 20,
+    width: 32,
+    height: 32,
     alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 3,
+    borderColor: "#F8F6FF",
   },
-  seekerButtonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  generalSection: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    marginHorizontal: 16,
-    marginTop: 18,
-    paddingBottom: 24,
-    paddingTop: 8,
-    elevation: 1,
-  },
-  generalTitle: {
-    fontWeight: "700",
-    fontSize: 15,
-    color: "#888",
-    marginLeft: 16,
-    marginTop: 8,
+  userName: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 8,
   },
-  generalItem: {
+  userRole: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 16,
+  },
+  toggleButton: {
+    backgroundColor: "#8C52FF",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 25,
+  },
+  toggleButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  statsSection: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  statItem: {
+    alignItems: "center",
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#8C52FF",
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: "#666",
+    textAlign: "center",
+  },
+  actionsSection: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  actionButton: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    borderBottomColor: "#f0f0f0",
   },
-  generalLabel: {
-    fontSize: 15,
-    color: "#222",
+  actionButtonText: {
+    marginLeft: 16,
+    fontSize: 16,
+    color: "#333",
     fontWeight: "500",
   },
-  logoutBtn: {
-    marginTop: 18,
-    marginHorizontal: 16,
-    borderWidth: 1.5,
-    borderColor: "#A259FF",
-    borderRadius: 8,
-    paddingVertical: 12,
+  logoutButton: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  logoutText: {
-    color: "#A259FF",
-    fontWeight: "700",
+  logoutButtonText: {
+    marginLeft: 12,
     fontSize: 16,
+    color: "#FF6B6B",
+    fontWeight: "600",
   },
 });
 

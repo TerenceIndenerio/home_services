@@ -1,49 +1,76 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
-import SearchBar from '@/app/Search/components/SearchBar';
-import PopularSearchSection from '@/app/Search/components/PopularSearchSection';
-import TopServiceSection from '@/app/Search/components/TopServiceSection';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProp } from '@react-navigation/native';
+import SearchBar from './components/SearchBar';
+import PopularSearchSection from './components/PopularSearchSection';
+import TopServiceSection from './components/TopServiceSection';
+
+type RootStackParamList = {
+  'Search/SearchResults': {
+    query: string;
+    results: any[];
+  };
+};
 
 const SearchMenu = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchQuery, setSearchQuery] = useState('');
-  const navigation = useNavigation<NavigationProp<any>>();
+
+  const seekers = [
+    {
+      id: '1',
+      firstName: 'Matt',
+      lastName: 'Dawner',
+      profile: {
+        jobTitle: 'Electrician',
+        ratings: 4.8,
+        yearsOfExperience: 5,
+        skills: ['Electrical wiring', 'Circuit repair', 'Installation'],
+        location: 'Antipolo, Rizal'
+      }
+    },
+    {
+      id: '2',
+      firstName: 'Jay',
+      lastName: 'Noman',
+      profile: {
+        jobTitle: 'Plumber',
+        ratings: 4.6,
+        yearsOfExperience: 3,
+        skills: ['Pipe repair', 'Drainage', 'Installation'],
+        location: 'Cainta, Rizal'
+      }
+    },
+    {
+      id: '3',
+      firstName: 'Fiona',
+      lastName: 'Harke',
+      profile: {
+        jobTitle: 'Carpenter',
+        ratings: 4.9,
+        yearsOfExperience: 7,
+        skills: ['Woodworking', 'Furniture repair', 'Installation'],
+        location: 'Binangonan, Rizal'
+      }
+    }
+  ];
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return Alert.alert('Please enter a search term');
+    if (!searchQuery.trim()) {
+      Alert.alert('Error', 'Please enter a search term');
+      return;
+    }
 
     try {
-      // Step 1: Get all seekers who are active job seekers
-      const q = query(
-        collection(db, 'users'),
-        where('accountType', '==', 'seeker'),
-        where('isJobSeeker', '==', true),
-        where('isActive', '==', true)
-      );
-
-      const snapshot = await getDocs(q);
-      let seekers: any[] = [];
-      snapshot.forEach(doc => {
-        seekers.push({ id: doc.id, ...doc.data() });
-      });
-
-      if (seekers.length === 0) {
-        Alert.alert('No matching job seekers found');
-        return;
-      }
-
-      // Step 2: Let AI rank them by best match for the search term
       const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer YOUR_OPENAI_API_KEY`
+          'Authorization': `Bearer ${process.env.EXPO_PUBLIC_OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'gpt-3.5-turbo',
           messages: [
             {
               role: 'system',
@@ -60,12 +87,10 @@ const SearchMenu = () => {
       const aiData = await aiResponse.json();
       const rankedIds = JSON.parse(aiData.choices[0].message.content);
 
-      // Step 3: Sort seekers according to AI ranking
       const rankedSeekers = rankedIds
-        .map(id => seekers.find(seeker => seeker.id === id))
+        .map((id: string) => seekers.find(seeker => seeker.id === id))
         .filter(Boolean);
 
-      // Step 4: Navigate to results screen
       navigation.navigate('Search/SearchResults', {
         query: searchQuery,
         results: rankedSeekers
@@ -80,24 +105,6 @@ const SearchMenu = () => {
   return (
     <View style={styles.container}>
       <View style={styles.searchBarContainer}>
-        {/* Back Button */}
-        <TouchableOpacity
-          onPress={() => {
-            try {
-              if (navigation.canGoBack && navigation.canGoBack()) {
-                navigation.goBack();
-              } else {
-                navigation.navigate('Home' as never);
-              }
-            } catch {
-              navigation.navigate('Home' as never);
-            }
-          }}
-        >
-          <Icon name="arrow-back-outline" size={20} color="#222" />
-        </TouchableOpacity>
-
-        {/* Search Field */}
         <SearchBar
           Placeholder="Search for services or providers"
           value={searchQuery}
@@ -105,14 +112,8 @@ const SearchMenu = () => {
           onClear={() => setSearchQuery('')}
         />
 
-        {/* Search Button */}
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
           <Text style={styles.searchButtonText}>Search</Text>
-        </TouchableOpacity>
-
-        {/* Filter Icon */}
-        <TouchableOpacity>
-          <Icon name="options-outline" size={22} color="#222" />
         </TouchableOpacity>
       </View>
 
@@ -123,20 +124,38 @@ const SearchMenu = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
   searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 12,
-    marginTop: 10,
-    marginBottom: 14,
+    marginBottom: 24,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   searchButton: {
-    backgroundColor: '#007BFF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    marginLeft: 6,
+    backgroundColor: '#8C52FF',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+    marginLeft: 12,
+    shadowColor: '#8C52FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   searchButtonText: {
     color: '#fff',

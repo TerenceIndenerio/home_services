@@ -7,10 +7,10 @@ interface DividerProps {
 
 const Divider: React.FC<DividerProps> = ({ text }) => {
   return (
-    <View className="flex-row items-center my-4">
-      <View className="flex-1 h-px bg-gray-300" />
-      <Text className="mx-4 text-gray-500 text-sm">{text}</Text>
-      <View className="flex-1 h-px bg-gray-300" />
+    <View style={styles.divider}>
+      <View style={styles.line} />
+      <Text style={styles.text}>{text}</Text>
+      <View style={styles.line} />
     </View>
   );
 };
