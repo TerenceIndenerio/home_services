@@ -6,11 +6,10 @@ import {
   StatusBar,
   Dimensions,
 } from "react-native";
-import Header from "../home/components/Header";
-import MessagesList, { MessageItem } from "../Messages/components/MessagesList";
-
+import Header from "../../src/features/home/components/Header";
+import MessagesList, { MessageItem } from "../Messages/MessagesListScreen";
 import { useRouter } from "expo-router";
-// Chat context for global chat data
+
 export const ChatContext = React.createContext({ chats: {} as any, setChats: (_: any) => {} });
 
 const screenWidth = Dimensions.get("window").width;
@@ -26,18 +25,17 @@ const HomeScreen: React.FC = () => {
       name: 'Matt Dawner',
       message: "No problem at all! I'll be there in 15 minutes and I'll text you when I...",
       time: '2:17 PM',
-      avatar: { uri: 'https://randomuser.me/api/portraits/men/42.jpg' }, // Use a valid image
+      avatar: { uri: 'https://randomuser.me/api/portraits/men/42.jpg' },
     },
     {
       id: '2',
       name: 'Jay Noman',
       message: "No problem at all! I'll be there in 15 minutes and I'll text you when I...",
       time: '2:17 PM',
-      avatar: { uri: 'https://randomuser.me/api/portraits/men/45.jpg' }, // Use a valid image
+      avatar: { uri: 'https://randomuser.me/api/portraits/men/45.jpg' },
     },
   ];
 
-  // Example chat messages per user (replace with your DB logic)
   const chatMessages = {
     '1': [
       { id: "1", text: "This is your electrician. I'm just around the corner from your place. 😊", time: "10:10", sent: false },
@@ -53,7 +51,6 @@ const HomeScreen: React.FC = () => {
     ],
   };
 
-  // On mount, store chat messages in context
   React.useEffect(() => {
     setChats(chatMessages);
   }, []);
@@ -64,7 +61,7 @@ const HomeScreen: React.FC = () => {
       params: {
         chatId: item.id,
         userName: item.name,
-        userRole: "Electrician", // Or dynamic role
+        userRole: "Electrician",
         userAvatar: item.avatar,
       }
     });
@@ -72,8 +69,6 @@ const HomeScreen: React.FC = () => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    // Add any data fetching logic here
-    // For example, refetch messages
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
@@ -83,7 +78,6 @@ const HomeScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      {/* Fixed Header */}
       <View style={styles.headerWrapper}>
         <Header />
       </View>
@@ -115,6 +109,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     zIndex: 10,
     elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   contentWrapper: {
     flex: 1,
@@ -122,10 +120,10 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
     width: screenWidth,
     backgroundColor: "#fff",
+    paddingHorizontal: 20,
   },
 });
 
-// Wrap export with ChatContext provider
 export default function HomeScreenWithProvider(props: any) {
   const [chats, setChats] = React.useState({});
   return (

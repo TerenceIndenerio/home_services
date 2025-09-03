@@ -113,7 +113,9 @@ export default function PinSetupScreen() {
       {pin.map((digit, i) => (
         <TextInput
           key={i}
-          ref={(ref) => (refs[i] = ref)}
+          ref={(ref) => {
+            if (ref) refs[i] = ref;
+          }}
           value={digit ? "•" : ""}
           onChangeText={(val) => handleChange(val, i, activeInput)}
           keyboardType="number-pad"

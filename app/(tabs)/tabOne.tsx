@@ -9,14 +9,14 @@ import {
   FlatList,
   RefreshControl,
 } from "react-native";
-import Header from "../home/components/Header";
+import Header from "../../src/features/home/components/Header";
 import BookedJobsCard from "../Jobs/components/BookedJobsCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
 const screenWidth = Dimensions.get("window").width;
 
-const HomeScreen: React.FC = () => {
+const JobsScreen: React.FC = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = React.useState("Pending");
   const [refreshing, setRefreshing] = React.useState(false);
@@ -25,23 +25,19 @@ const HomeScreen: React.FC = () => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    // Add data fetching logic here
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
   }, []);
 
-  // Just to render one card per tab for now
   const data = [{ id: "1", status: activeTab.toLowerCase() }];
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Fixed Header */}
       <View style={styles.headerWrapper}>
         <Header />
       </View>
 
-      {/* Tab Bar */}
       <View style={styles.tabBar}>
         {tabs.map((tab) => (
           <TouchableOpacity
@@ -61,7 +57,6 @@ const HomeScreen: React.FC = () => {
         ))}
       </View>
 
-      {/* FlatList instead of ScrollView */}
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
@@ -80,7 +75,6 @@ const HomeScreen: React.FC = () => {
         }
       />
 
-      {/* Floating Add Button */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => router.push("/TabOne/AddJobPost")}
@@ -106,27 +100,46 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     zIndex: 10,
     elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   tabBar: {
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingVertical: 10,
-    backgroundColor: "#f9f9f9",
+    paddingVertical: 16,
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    borderBottomColor: "#f0f0f0",
     marginTop: 150,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   tabItem: {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 20,
+    backgroundColor: "#f8f9fa",
+    borderWidth: 1,
+    borderColor: "#e9ecef",
   },
   tabItemActive: {
-    backgroundColor: "#8F5CFF",
+    backgroundColor: "#8C52FF",
+    borderColor: "#8C52FF",
+    shadowColor: "#8C52FF",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   tabText: {
     fontSize: 14,
-    color: "#555",
+    color: "#666",
+    fontWeight: "500",
   },
   tabTextActive: {
     color: "#fff",
@@ -136,20 +149,25 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
     flexGrow: 1,
     width: screenWidth,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   fab: {
     position: "absolute",
     right: 24,
     bottom: 32,
-    backgroundColor: "#8F5CFF",
+    backgroundColor: "#8C52FF",
     borderRadius: 28,
     width: 56,
     height: 56,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 5,
-    zIndex: 20,
+    shadowColor: "#8C52FF",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
 });
 
-export default HomeScreen;
+export default JobsScreen;

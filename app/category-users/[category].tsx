@@ -4,9 +4,9 @@ import { getFirestore, collection, getDocs, query, where } from 'firebase/firest
 import { app } from '../../firebaseConfig';
 import { useLocalSearchParams } from 'expo-router';
 import { useRouter } from 'expo-router';
-import { app } from '@/firebaseConfig';
-import Colors from '@/app/constants/Colors';
-import ServiceCard from '@/src/features/home/components/ServiceCard';
+import { Ionicons } from '@expo/vector-icons';
+import Colors from '../constants/Colors';
+import ServiceCard from '../../src/features/home/components/ServiceCard';
 
 const db = getFirestore(app);
 
@@ -23,12 +23,10 @@ const CategoryUsersScreen: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  // Filter states
   const [searchName, setSearchName] = useState('');
   const [minRating, setMinRating] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'experience'>('relevance');
 
-  // Prepare exampleServices as array
   const exampleServicesArr = typeof exampleServices === 'string' ? exampleServices.split(',') : [];
   let categoryName = '';
   if (typeof name === 'string') {
@@ -71,24 +69,20 @@ const CategoryUsersScreen: React.FC = () => {
     });
   }, [categoryName, exampleServices]);
 
-  // Filtering and sorting logic
   const getFilteredUsers = () => {
     let filtered = users;
-    // Filter by name
     if (searchName.trim()) {
       filtered = filtered.filter(user => {
         const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
         return fullName.includes(searchName.trim().toLowerCase());
       });
     }
-    // Filter by rating
     if (minRating) {
       filtered = filtered.filter(user => {
         const rating = Number(user.profile?.ratings) || 0;
         return rating >= minRating;
       });
     }
-    // Sort
     if (sortBy === 'rating') {
       filtered = [...filtered].sort((a, b) => (Number(b.profile?.ratings) || 0) - (Number(a.profile?.ratings) || 0));
     } else if (sortBy === 'experience') {
@@ -98,9 +92,9 @@ const CategoryUsersScreen: React.FC = () => {
         const jobA = (a.profile?.jobTitle || '').toLowerCase();
         const jobB = (b.profile?.jobTitle || '').toLowerCase();
         const cat = categoryName.toLowerCase();
-        const aRelevant = jobA.includes(cat) ? 1 : exampleServicesArr.some(s => jobA.includes(s.toLowerCase())) ? 0.5 : 0;
-        const bRelevant = jobB.includes(cat) ? 1 : exampleServicesArr.some(s => jobB.includes(s.toLowerCase())) ? 0.5 : 0;
-        return bRelevant - aRelevant;
+        const relevanceA = jobA.includes(cat) ? 1 : 0;
+        const relevanceB = jobB.includes(cat) ? 1 : 0;
+        return relevanceB - relevanceA;
       });
     }
     return filtered;
@@ -113,7 +107,12 @@ const CategoryUsersScreen: React.FC = () => {
   };
 
   if (loading) {
-    return <ActivityIndicator style={{ marginTop: 20 }} />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#8C52FF" />
+        <Text style={styles.loadingText}>Finding job seekers...</Text>
+      </View>
+    );
   }
 
   return (
@@ -121,10 +120,11 @@ const CategoryUsersScreen: React.FC = () => {
       <TouchableOpacity onPress={() => router.replace('/')} style={styles.goBackButton}>
         <Ionicons name="arrow-back" size={24} color="#333" />
       </TouchableOpacity>
+      
       <View style={styles.headerWrapper}>
         <Text style={styles.headerText}>Job Seekers for {categoryName}</Text>
       </View>
-      {/* Modern Search Bar */}
+      
       <View style={styles.searchBarWrapper}>
         <Ionicons name="search-outline" size={22} color="#8C52FF" style={{ marginLeft: 12, marginRight: 6 }} />
         <TextInput
@@ -141,10 +141,9 @@ const CategoryUsersScreen: React.FC = () => {
           </TouchableOpacity>
         )}
       </View>
-      {/* Filter Chips */}
+      
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChipBar}>
         <View style={styles.filterChipRow}>
-          {/* Rating Chips */}
           {RATING_FILTERS.map(r => (
             <TouchableOpacity
               key={r}
@@ -155,7 +154,6 @@ const CategoryUsersScreen: React.FC = () => {
               <Text style={[styles.filterChipText, minRating === r && { color: '#fff' }]}>Min {r}+</Text>
             </TouchableOpacity>
           ))}
-          {/* Sort Chips */}
           {SORT_OPTIONS.map(opt => (
             <TouchableOpacity
               key={opt.key}
@@ -166,13 +164,13 @@ const CategoryUsersScreen: React.FC = () => {
               <Text style={[styles.filterChipText, sortBy === opt.key && { color: '#fff' }]}>{opt.label}</Text>
             </TouchableOpacity>
           ))}
-          {/* Clear Filters */}
           <TouchableOpacity style={styles.clearChip} onPress={handleClearFilters}>
             <Ionicons name="close" size={16} color="#8C52FF" style={{ marginRight: 3 }} />
             <Text style={styles.clearChipText}>Clear</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+      
       <FlatList
         data={getFilteredUsers()}
         horizontal
@@ -217,123 +215,127 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 4,
   },
   headerWrapper: {
-    alignItems: 'center',
-    marginBottom: 16,
-    marginTop: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
   },
   headerText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#222',
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
     textAlign: 'center',
   },
   searchBarWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 28,
+    backgroundColor: '#f8f9fa',
+    marginHorizontal: 20,
+    borderRadius: 16,
+    paddingVertical: 8,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#eee',
-    marginHorizontal: 16,
-    marginBottom: 8,
-    height: 48,
+    borderColor: '#e9ecef',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
     shadowRadius: 4,
-    elevation: 1,
+    elevation: 2,
   },
   searchBar: {
     flex: 1,
-    fontSize: 17,
-    color: '#222',
-    paddingVertical: 0,
-    paddingRight: 10,
-    backgroundColor: 'transparent',
-    borderWidth: 0,
+    fontSize: 16,
+    color: '#333',
+    paddingVertical: 8,
   },
   filterChipBar: {
-    minHeight: 54,
-    maxHeight: 54,
-    marginBottom: 4,
-    marginLeft: 0,
-    marginTop: 0,
+    marginBottom: 20,
   },
   filterChipRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 6,
+    paddingHorizontal: 20,
+    gap: 8,
   },
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#8C52FF',
-    borderRadius: 20,
-    paddingVertical: 7,
-    paddingHorizontal: 16,
-    marginRight: 8,
-    backgroundColor: '#fff',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
   },
   filterChipActive: {
     backgroundColor: '#8C52FF',
     borderColor: '#8C52FF',
+    shadowColor: '#8C52FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   filterChipText: {
-    fontSize: 15,
-    color: '#8C52FF',
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#666',
   },
   clearChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#eee',
-    borderRadius: 20,
-    paddingVertical: 7,
-    paddingHorizontal: 16,
-    marginRight: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     backgroundColor: '#fff',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#8C52FF',
   },
   clearChipText: {
-    fontSize: 15,
+    fontSize: 12,
+    fontWeight: '500',
     color: '#8C52FF',
-    fontWeight: '700',
   },
   flatList: {
-    minHeight: 220,
-    maxHeight: 260,
-    paddingLeft: 16,
-    paddingRight: 0,
+    flex: 1,
   },
   flatListContent: {
-    alignItems: 'center',
-    paddingBottom: 32,
-    paddingTop: 8,
-    paddingRight: 16,
+    paddingHorizontal: 20,
   },
   cardWrapper: {
-    marginRight: 12,
+    marginRight: 16,
+    width: 200,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   emptyStateWrapper: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 180,
-    width: 300,
+    paddingVertical: 40,
   },
   emptyText: {
-    textAlign: 'center',
-    marginTop: 32,
-    color: '#888',
     fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
     fontWeight: '500',
   },
 });

@@ -1,95 +1,81 @@
-import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import Colors from "../constants/Colors";
 import { useColorScheme } from "../../src/utils/useColorScheme";
-import { Animated, Text } from "react-native";
-
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme() || 'light';
-
-  const scaleAnim = (focused: boolean) => ({
-    transform: [{ scale: focused ? 1.05 : 1 }],
-  });
+  const colorScheme = useColorScheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#8C52FF', // active icon and label color
-        tabBarInactiveTintColor: '#888', // optional: subtle gray for inactive
-        headerShown: false,
+        tabBarActiveTintColor: "#8C52FF",
+        tabBarInactiveTintColor: "#666",
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopWidth: 0,
-          elevation: 0,
+          backgroundColor: '#fff',
+          borderTopWidth: 1,
+          borderTopColor: '#f0f0f0',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 8,
+          paddingBottom: 8,
+          paddingTop: 8,
+          height: 80,
         },
-        tabBarActiveBackgroundColor: '#f3edff', // subtle light purple background for active tab
-        tabBarInactiveBackgroundColor: '#ffffff',
+        headerShown: false,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ focused }) => (
-            <Animated.View style={scaleAnim(focused)}>
-              <TabBarIcon name="home" color="#8C52FF" />
-            </Animated.View>
-          ),
-          tabBarLabel: ({ focused, color }) => (
-            <Animated.Text style={[scaleAnim(focused), { color, fontSize: 12 }]}>Home</Animated.Text>
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons 
+              name={focused ? "home" : "home-outline"} 
+              size={24} 
+              color={color} 
+            />
           ),
         }}
       />
-
       <Tabs.Screen
         name="tabOne"
         options={{
           title: "Jobs",
-          tabBarIcon: ({ focused }) => (
-            <Animated.View style={scaleAnim(focused)}>
-              <TabBarIcon name="clipboard" color="#8C52FF" />
-            </Animated.View>
-          ),
-          tabBarLabel: ({ focused, color }) => (
-            <Animated.Text style={[scaleAnim(focused), { color, fontSize: 12 }]}>Jobs</Animated.Text>
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons 
+              name={focused ? "briefcase" : "briefcase-outline"} 
+              size={24} 
+              color={color} 
+            />
           ),
         }}
       />
-
       <Tabs.Screen
         name="tabTwo"
         options={{
           title: "Messages",
-          tabBarIcon: ({ focused }) => (
-            <Animated.View style={scaleAnim(focused)}>
-              <TabBarIcon name="inbox" color="#8C52FF" />
-            </Animated.View>
-          ),
-          tabBarLabel: ({ focused, color }) => (
-            <Animated.Text style={[scaleAnim(focused), { color, fontSize: 12 }]}>Messages</Animated.Text>
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons 
+              name={focused ? "chatbubbles" : "chatbubbles-outline"} 
+              size={24} 
+              color={color} 
+            />
           ),
         }}
       />
-
       <Tabs.Screen
         name="tabThree"
         options={{
-          title: "Account",
-          tabBarIcon: ({ focused }) => (
-            <Animated.View style={scaleAnim(focused)}>
-              <TabBarIcon name="user" color="#8C52FF" />
-            </Animated.View>
-          ),
-          tabBarLabel: ({ focused, color }) => (
-            <Animated.Text style={[scaleAnim(focused), { color, fontSize: 12 }]}>Account</Animated.Text>
+          title: "Profile",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons 
+              name={focused ? "person" : "person-outline"} 
+              size={24} 
+              color={color} 
+            />
           ),
         }}
       />

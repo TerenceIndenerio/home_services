@@ -91,7 +91,9 @@ export default function PinCodeInput({
         {pin.map((digit, i) => (
           <TextInput
             key={i}
-            ref={(ref) => (inputs.current[i] = ref)}
+            ref={(ref) => {
+              if (ref) inputs.current[i] = ref;
+            }}
             value={digit ? "•" : ""}
             onChangeText={(val) => handleChange(val, i)}
             keyboardType="number-pad"

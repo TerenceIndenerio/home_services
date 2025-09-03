@@ -1,13 +1,7 @@
-// SeekerEditProfileScreen.tsx
-// This screen allows seekers to edit their profile information, including profile image, name, address, email, mobile number, sex, and professional profile details. It uses reusable components for each section and provides navigation back to the profile page.
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Alert, ActivityIndicator, Text, ScrollView } from 'react-native';
-import ProfileImageSection from '../seekerComponents/editProfile/ProfileImageSection';
-import AboutMeSection from '../seekerComponents/editProfile/AboutMeSection';
-import PersonalInfoSection from '../seekerComponents/editProfile/PersonalInfoSection';
-import ProfileDetailsSection from '../seekerComponents/editProfile/ProfileDetailsSection';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../authentication/context/authContext';
+import { useAuth } from '../../src/features/auth/context/authContext';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -51,7 +45,6 @@ const SeekerEditProfileScreen = () => {
   const [saving, setSaving] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   
-  // New profile fields
   const [jobTitle, setJobTitle] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [bio, setBio] = useState('');
@@ -59,7 +52,6 @@ const SeekerEditProfileScreen = () => {
   const [experience, setExperience] = useState('');
   const [hourlyRate, setHourlyRate] = useState('');
 
-  // Fetch user data from Firestore
   const fetchUserData = async () => {
     if (!user?.uid) {
       setLoading(false);
@@ -67,8 +59,12 @@ const SeekerEditProfileScreen = () => {
     }
 
     try {
-      // Use userDocumentId from auth context
       const documentId = userDocumentId || user.uid;
+
+      if (!documentId) {
+        Alert.alert('Error', 'User document ID not found');
+        return;
+      }
 
       const userDocRef = doc(db, 'users', documentId);
       const userDoc = await getDoc(userDocRef);
@@ -77,7 +73,6 @@ const SeekerEditProfileScreen = () => {
         const data = userDoc.data() as UserData;
         setUserData(data);
         
-        // Update state with Firestore data
         setImageUrl(data.profilePictureUrl || DEFAULT_IMAGE);
         setName(`${data.firstName || ''} ${data.lastName || ''}`.trim());
         setAddress(data.address || '');
@@ -85,7 +80,6 @@ const SeekerEditProfileScreen = () => {
         setMobile(data.phoneNumber || '');
         setPincode(data.pincode?.toString() || '');
         
-        // Update new profile fields
         setJobTitle(data.profile?.jobTitle || '');
         setJobDescription(data.profile?.jobDescription || '');
         setBio(data.profile?.bio || '');
@@ -93,12 +87,8 @@ const SeekerEditProfileScreen = () => {
         setExperience(data.profile?.experience || '');
         setHourlyRate(data.profile?.hourlyRate?.toString() || '');
         
-        // Log the data for debugging
         console.log('Loaded user data:', data);
         console.log('Profile data:', data.profile);
-        
-        // For sex, we'll keep the default since it's not in the Firestore data
-        // You can add this field to your Firestore if needed
       } else {
         console.log('User document not found');
         Alert.alert('Profile Not Found', 'Your profile data could not be found. Please contact support.');
@@ -122,14 +112,11 @@ const SeekerEditProfileScreen = () => {
   };
 
   const handleEditImage = () => {
-    // Placeholder for image picker logic
     Alert.alert('Edit Profile Image', 'Image picker logic goes here.');
   };
 
   const handleBack = () => {
-    // Try to go back, but if not possible, go to home
     try {
-      // @ts-ignore: canGoBack may not exist in expo-router, fallback to push
       if (router.canGoBack && router.canGoBack()) {
         router.back();
       } else {
@@ -150,7 +137,6 @@ const SeekerEditProfileScreen = () => {
       return;
     }
 
-    // Basic validation
     if (!name.trim()) {
       Alert.alert('Error', 'Please enter your name');
       return;
@@ -166,7 +152,6 @@ const SeekerEditProfileScreen = () => {
       return;
     }
 
-    // Profile validation
     if (!jobTitle.trim()) {
       Alert.alert('Error', 'Please enter your job title');
       return;
@@ -197,14 +182,12 @@ const SeekerEditProfileScreen = () => {
       return;
     }
 
-    // Validate hourly rate is a positive number
     const hourlyRateNum = parseFloat(hourlyRate);
     if (isNaN(hourlyRateNum) || hourlyRateNum <= 0) {
       Alert.alert('Error', 'Please enter a valid hourly rate (positive number)');
       return;
     }
 
-    // Email validation (if provided)
     if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       Alert.alert('Error', 'Please enter a valid email address');
       return;
@@ -213,15 +196,18 @@ const SeekerEditProfileScreen = () => {
     setSaving(true);
 
     try {
-      // Get document ID
       let documentId = await AsyncStorage.getItem('user_document_id');
       if (!documentId) {
         documentId = user.uid;
       }
 
+      if (!documentId) {
+        Alert.alert('Error', 'User document ID not found');
+        return;
+      }
+
       const userDocRef = doc(db, 'users', documentId);
       
-      // Prepare update data
       const updateData: Partial<UserData> = {
         firstName: name.split(' ')[0] || '',
         lastName: name.split(' ').slice(1).join(' ') || '',
@@ -238,12 +224,10 @@ const SeekerEditProfileScreen = () => {
           hourlyRate: hourlyRateNum,
           rating: userData?.profile?.rating || 0,
         },
-        // Add other fields as needed
       };
 
       await updateDoc(userDocRef, updateData);
       
-      // Show success message
       Alert.alert(
         'Success', 
         'Profile updated successfully!',
@@ -251,7 +235,6 @@ const SeekerEditProfileScreen = () => {
           {
             text: 'OK',
             onPress: () => {
-              // Update local state
               setUserData(prev => prev ? { ...prev, ...updateData } : null);
             }
           }
@@ -261,7 +244,6 @@ const SeekerEditProfileScreen = () => {
     } catch (error: any) {
       console.error('Error updating profile:', error);
       
-      // Provide more specific error messages
       let errorMessage = 'Failed to update profile. Please try again.';
       
       if (error.code === 'permission-denied') {
@@ -310,51 +292,9 @@ const SeekerEditProfileScreen = () => {
         showsVerticalScrollIndicator={false}
         bounces={true}
       >
-        <ProfileImageSection 
-          imageUrl={imageUrl} 
-          onEdit={handleEditImage} 
-          onBack={handleBack}
-          onRefresh={handleRefresh}
-          refreshing={refreshing}
-        />
-        <AboutMeSection 
-          name={name} 
-          setName={setName} 
-          address={address}
-          setAddress={setAddress}
-          email={email}
-          setEmail={setEmail}
-          rating={userData?.profile?.rating}
-        />
-       {userData?.isJobSeeker && (
-  <ProfileDetailsSection
-    jobTitle={jobTitle}
-    setJobTitle={setJobTitle}
-    jobDescription={jobDescription}
-    setJobDescription={setJobDescription}
-    bio={bio}
-    setBio={setBio}
-    skills={skills}
-    setSkills={setSkills}
-    experience={experience}
-    setExperience={setExperience}
-    hourlyRate={hourlyRate}
-    setHourlyRate={setHourlyRate}
-    rating={userData?.profile?.rating}
-  />
-)}
-
-      <PersonalInfoSection
-          mobile={mobile}
-          setMobile={setMobile}
-          sex={sex}
-          setSex={setSex}
-          pincode={pincode}
-          setPincode={setPincode}
-          onPreview={handlePreview}
-          onSave={handleSaveProfile}
-          saving={saving}
-        />
+        <View style={styles.placeholderContainer}>
+          <Text style={styles.placeholderText}>Profile editing components will be implemented here</Text>
+        </View>
       </ScrollView>
     </View>
   );
@@ -363,7 +303,7 @@ const SeekerEditProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F6FF',
+    backgroundColor: '#fff',
   },
   scrollView: {
     flex: 1,
@@ -371,16 +311,40 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingTop: 24,
     paddingBottom: 24,
+    paddingHorizontal: 20,
   },
   loadingContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   errorText: {
-    color: 'red',
+    color: '#FF6B6B',
     fontSize: 18,
     textAlign: 'center',
     marginTop: 20,
+    fontWeight: '500',
+  },
+  placeholderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });
 

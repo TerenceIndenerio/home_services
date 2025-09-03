@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 
 import { styles } from "../../src/styles/viewProfileStyles";
-import AboutSection from "./components/AboutSection";
+import AboutSection from "../../src/features/viewProfile/components/AboutSection";
 
 const GALLERY_IMAGES = [
   "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",

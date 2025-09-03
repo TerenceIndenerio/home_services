@@ -52,7 +52,7 @@ export default function BookingCard({ data, tab }: BookingCardProps) {
               <Text style={styles.penalty}>~{data.penalty}</Text>
             )}
              <WhiteSpace size="sm" />
-            <Button type={tab === 'Scheduled' ? 'default' : 'primary'} size="small">
+            <Button type={tab === 'Scheduled' ? 'ghost' : 'primary'} size="small">
               <Text>{data.button.label}</Text>
             </Button>
           </Flex.Item>
