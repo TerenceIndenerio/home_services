@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, ActivityIndicator, Text, ScrollView } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  Text,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../src/features/auth/context/authContext';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,6 +25,7 @@ interface UserData {
   profilePictureUrl?: string;
   profile?: {
     jobTitle?: string;
+    jobCategory?: string;
     rating?: number;
     jobDescription?: string;
     bio?: string;
@@ -24,9 +35,6 @@ interface UserData {
   };
   address?: string;
   email?: string;
-  isJobSeeker?: boolean;
-  latitude?: number;
-  longitude?: number;
   pincode?: number;
 }
 
@@ -34,23 +42,42 @@ const SeekerEditProfileScreen = () => {
   const router = useRouter();
   const { user, userDocumentId } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [imageUrl, setImageUrl] = useState(DEFAULT_IMAGE);
+  const [saving, setSaving] = useState(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
+
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
-  const [sex, setSex] = useState('Male');
   const [pincode, setPincode] = useState('');
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  
   const [jobTitle, setJobTitle] = useState('');
+  const [jobCategory, setJobCategory] = useState('');
+  const [jobCategories, setJobCategories] = useState<string[]>([]);
   const [jobDescription, setJobDescription] = useState('');
   const [bio, setBio] = useState('');
   const [skills, setSkills] = useState('');
   const [experience, setExperience] = useState('');
   const [hourlyRate, setHourlyRate] = useState('');
+
+  useEffect(() => {
+    fetchUserData();
+    fetchJobCategories();
+  }, [user?.uid]);
+
+  const fetchJobCategories = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'jobCategories'));
+      const categories: string[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.name) categories.push(data.name);
+      });
+      setJobCategories(categories);
+    } catch (error) {
+      console.error('Error fetching job categories:', error);
+      Alert.alert('Error', 'Failed to load job categories.');
+    }
+  };
 
   const fetchUserData = async () => {
     if (!user?.uid) {
@@ -60,75 +87,34 @@ const SeekerEditProfileScreen = () => {
 
     try {
       const documentId = userDocumentId || user.uid;
-
-      if (!documentId) {
-        Alert.alert('Error', 'User document ID not found');
-        return;
-      }
-
       const userDocRef = doc(db, 'users', documentId);
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
         const data = userDoc.data() as UserData;
         setUserData(data);
-        
-        setImageUrl(data.profilePictureUrl || DEFAULT_IMAGE);
+
         setName(`${data.firstName || ''} ${data.lastName || ''}`.trim());
         setAddress(data.address || '');
         setEmail(data.email || '');
         setMobile(data.phoneNumber || '');
         setPincode(data.pincode?.toString() || '');
-        
         setJobTitle(data.profile?.jobTitle || '');
+        setJobCategory(data.profile?.jobCategory || '');
         setJobDescription(data.profile?.jobDescription || '');
         setBio(data.profile?.bio || '');
         setSkills(data.profile?.skills || '');
         setExperience(data.profile?.experience || '');
         setHourlyRate(data.profile?.hourlyRate?.toString() || '');
-        
-        console.log('Loaded user data:', data);
-        console.log('Profile data:', data.profile);
       } else {
-        console.log('User document not found');
-        Alert.alert('Profile Not Found', 'Your profile data could not be found. Please contact support.');
+        Alert.alert('Profile Not Found', 'Your profile data could not be found.');
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
-      Alert.alert('Error', 'Failed to load user profile data. Please check your internet connection and try again.');
+      Alert.alert('Error', 'Failed to load user profile data.');
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
-  };
-
-  useEffect(() => {
-    fetchUserData();
-  }, [user?.uid]);
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-    fetchUserData();
-  };
-
-  const handleEditImage = () => {
-    Alert.alert('Edit Profile Image', 'Image picker logic goes here.');
-  };
-
-  const handleBack = () => {
-    try {
-      if (router.canGoBack && router.canGoBack()) {
-        router.back();
-      } else {
-        router.replace ? router.replace("/") : router.push("/");
-      }
-    } catch {
-      router.replace ? router.replace("/") : router.push("/");
-    }
-  };
-
-  const handlePreview = () => {
-    Alert.alert('Preview', 'Preview logic goes here.');
   };
 
   const handleSaveProfile = async () => {
@@ -137,124 +123,43 @@ const SeekerEditProfileScreen = () => {
       return;
     }
 
-    if (!name.trim()) {
-      Alert.alert('Error', 'Please enter your name');
-      return;
-    }
-
-    if (!mobile.trim()) {
-      Alert.alert('Error', 'Please enter your mobile number');
-      return;
-    }
-
-    if (!pincode.trim() || pincode.length !== 4) {
-      Alert.alert('Error', 'Please enter a valid 4-digit PIN code');
-      return;
-    }
-
-    if (!jobTitle.trim()) {
-      Alert.alert('Error', 'Please enter your job title');
-      return;
-    }
-
-    if (!jobDescription.trim()) {
-      Alert.alert('Error', 'Please enter a job description');
-      return;
-    }
-
-    if (!bio.trim()) {
-      Alert.alert('Error', 'Please enter your bio');
-      return;
-    }
-
-    if (!skills.trim()) {
-      Alert.alert('Error', 'Please enter your skills');
-      return;
-    }
-
-    if (!experience.trim()) {
-      Alert.alert('Error', 'Please enter your experience');
-      return;
-    }
-
-    if (!hourlyRate.trim()) {
-      Alert.alert('Error', 'Please enter your hourly rate');
-      return;
-    }
-
-    const hourlyRateNum = parseFloat(hourlyRate);
-    if (isNaN(hourlyRateNum) || hourlyRateNum <= 0) {
-      Alert.alert('Error', 'Please enter a valid hourly rate (positive number)');
-      return;
-    }
-
-    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      Alert.alert('Error', 'Please enter a valid email address');
+    if (!name.trim() || !mobile.trim() || !pincode.trim()) {
+      Alert.alert('Error', 'Name, Mobile, and Pincode are required');
       return;
     }
 
     setSaving(true);
-
     try {
       let documentId = await AsyncStorage.getItem('user_document_id');
-      if (!documentId) {
-        documentId = user.uid;
-      }
-
-      if (!documentId) {
-        Alert.alert('Error', 'User document ID not found');
-        return;
-      }
+      if (!documentId) documentId = user.uid;
 
       const userDocRef = doc(db, 'users', documentId);
-      
+
       const updateData: Partial<UserData> = {
         firstName: name.split(' ')[0] || '',
         lastName: name.split(' ').slice(1).join(' ') || '',
         phoneNumber: mobile,
-        address: address,
-        email: email,
+        address,
+        email,
         pincode: parseInt(pincode) || 0,
         profile: {
-          jobTitle: jobTitle,
-          jobDescription: jobDescription,
-          bio: bio,
-          skills: skills,
-          experience: experience,
-          hourlyRate: hourlyRateNum,
+          jobTitle,
+          jobCategory,
+          jobDescription,
+          bio,
+          skills,
+          experience,
+          hourlyRate: parseFloat(hourlyRate) || 0,
           rating: userData?.profile?.rating || 0,
         },
       };
 
       await updateDoc(userDocRef, updateData);
-      
-      Alert.alert(
-        'Success', 
-        'Profile updated successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              setUserData(prev => prev ? { ...prev, ...updateData } : null);
-            }
-          }
-        ]
-      );
-      
+
+      Alert.alert('Success', 'Profile updated successfully!');
     } catch (error: any) {
       console.error('Error updating profile:', error);
-      
-      let errorMessage = 'Failed to update profile. Please try again.';
-      
-      if (error.code === 'permission-denied') {
-        errorMessage = 'Permission denied. Please check your account status.';
-      } else if (error.code === 'unavailable') {
-        errorMessage = 'Network unavailable. Please check your internet connection.';
-      } else if (error.code === 'deadline-exceeded') {
-        errorMessage = 'Request timeout. Please try again.';
-      }
-      
-      Alert.alert('Error', errorMessage);
+      Alert.alert('Error', 'Failed to update profile.');
     } finally {
       setSaving(false);
     }
@@ -262,7 +167,7 @@ const SeekerEditProfileScreen = () => {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.loadingContainer]}>
+      <View style={[styles.container, styles.center]}>
         <ActivityIndicator size="large" color="#8C52FF" />
       </View>
     );
@@ -270,82 +175,94 @@ const SeekerEditProfileScreen = () => {
 
   if (!user?.uid) {
     return (
-      <View style={[styles.container, styles.loadingContainer]}>
+      <View style={[styles.container, styles.center]}>
         <Text style={styles.errorText}>Please log in to edit your profile</Text>
       </View>
     );
   }
 
-  if (!userData) {
-    return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <Text style={styles.errorText}>Unable to load profile data</Text>
-      </View>
-    );
-  }
+  const renderInput = (label: string, value: string, onChange: (text: string) => void, props = {}) => (
+    <View style={styles.inputGroup}>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={onChange}
+        placeholder={label}
+        {...props}
+      />
+    </View>
+  );
 
   return (
-    <View style={styles.container}>
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        bounces={true}
-      >
-        <View style={styles.placeholderContainer}>
-          <Text style={styles.placeholderText}>Profile editing components will be implemented here</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+      <Text style={styles.title}>Edit Profile</Text>
+
+      {renderInput('Full Name', name, setName)}
+      {renderInput('Mobile Number', mobile, setMobile, { keyboardType: 'phone-pad' })}
+      {renderInput('Email Address', email, setEmail, { keyboardType: 'email-address' })}
+      {renderInput('Address', address, setAddress)}
+      {renderInput('Pincode', pincode, setPincode, { keyboardType: 'numeric' })}
+      {renderInput('Job Title', jobTitle, setJobTitle)}
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Job Category</Text>
+        <View style={styles.pickerWrapper}>
+          <Picker
+            selectedValue={jobCategory}
+            onValueChange={(itemValue) => setJobCategory(itemValue)}
+          >
+            <Picker.Item label="Select a category" value="" />
+            {jobCategories.map((cat, index) => (
+              <Picker.Item key={index} label={cat} value={cat} />
+            ))}
+          </Picker>
         </View>
-      </ScrollView>
-    </View>
+      </View>
+
+      {renderInput('Job Description', jobDescription, setJobDescription, { multiline: true })}
+      {renderInput('Bio', bio, setBio, { multiline: true })}
+      {renderInput('Skills', skills, setSkills)}
+      {renderInput('Experience', experience, setExperience)}
+      {renderInput('Hourly Rate', hourlyRate, setHourlyRate, { keyboardType: 'numeric' })}
+
+      <TouchableOpacity style={styles.button} onPress={handleSaveProfile} disabled={saving}>
+        <Text style={styles.buttonText}>{saving ? 'Saving...' : 'Save Profile'}</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingTop: 24,
-    paddingBottom: 24,
-    paddingHorizontal: 20,
-  },
-  loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: '#FF6B6B',
-    fontSize: 18,
-    textAlign: 'center',
-    marginTop: 20,
-    fontWeight: '500',
-  },
-  placeholderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 40,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 16,
+  container: { flex: 1, backgroundColor: '#fff' },
+  scrollContent: { padding: 20 },
+  center: { justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 22, fontWeight: '600', marginBottom: 20, textAlign: 'center', color: '#222' },
+  inputGroup: { marginBottom: 16 },
+  label: { fontSize: 14, fontWeight: '500', marginBottom: 6, color: '#555' },
+  input: {
     borderWidth: 1,
-    borderColor: '#e9ecef',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  placeholderText: {
+    borderColor: '#ccc',
+    padding: 12,
+    borderRadius: 8,
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    fontWeight: '500',
+    backgroundColor: '#fafafa',
   },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fafafa',
+  },
+  button: {
+    backgroundColor: '#8C52FF',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buttonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  errorText: { color: 'red', fontSize: 16, textAlign: 'center' },
 });
 
-export default SeekerEditProfileScreen; 
+export default SeekerEditProfileScreen;

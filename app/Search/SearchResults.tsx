@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp, useRoute, RouteProp } from '@react-navigation/native';
-import { collection, getDocs, query, orderBy, startAt, endAt } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, startAt, endAt } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import SearchBar from '@/app/Search/components/SearchBar';
 import SearchResultCard from '@/app/Search/components/SearchResultCard';
@@ -41,19 +41,28 @@ const SearchResultsScreen = () => {
     setLoading(true);
 
     try {
-      // Search by job field with partial match
+      // Firestore query: only active seekers, partial match on jobCategory
       const q = query(
-        collection(db, 'providers'),
-        orderBy('job'),
+        collection(db, 'users'),
+        where('accountType', '==', 'seeker'),
+        where('isActive', '==', true),
+        orderBy('jobCategory'),
         startAt(searchQuery),
         endAt(searchQuery + '\uf8ff')
       );
 
       const snapshot = await getDocs(q);
-      const data: Provider[] = snapshot.docs.map((doc) => ({
-        ...(doc.data() as Provider),
-        id: doc.id,
-      }));
+      const data: Provider[] = snapshot.docs.map((doc) => {
+        const d = doc.data();
+        return {
+          id: doc.id,
+          name: `${d.firstName} ${d.lastName}`,
+          rating: d.rating || 0,
+          job: d.jobTitle || d.jobCategory || 'N/A',
+          address: d.address || 'No address provided',
+          image: d.profileImageUrl || '',
+        };
+      });
 
       setResults(data);
     } catch (err) {
@@ -143,7 +152,7 @@ const SearchResultsScreen = () => {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              colors={["#8B5CF6"]}
+              colors={['#8B5CF6']}
               tintColor="#8B5CF6"
             />
           }

@@ -8,29 +8,76 @@ import {
   Text,
   FlatList,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import Header from "../../src/features/home/components/Header";
 import BookedJobsCard from "../Jobs/components/BookedJobsCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useAuth } from "../../src/features/auth/context/authContext";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 const screenWidth = Dimensions.get("window").width;
 
 const JobsScreen: React.FC = () => {
   const router = useRouter();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = React.useState("Pending");
+  const [jobs, setJobs] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
 
   const tabs = ["Pending", "Accepted", "Done", "Decline"];
 
+  const fetchJobs = React.useCallback(() => {
+    if (!user?.uid) {
+      console.log("No user logged in, skipping fetch");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const statusFilter = activeTab ? activeTab.toLowerCase() : "pending";
+
+    const jobsQuery = query(
+      collection(db, "bookings"),
+      where("userId", "==", user.uid),
+      where("status", "==", statusFilter)
+    );
+
+    const unsubscribe = onSnapshot(
+      jobsQuery,
+      (snapshot) => {
+        const jobsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setJobs(jobsData);
+        setLoading(false);
+        setRefreshing(false);
+      },
+      (error) => {
+        console.error("Error fetching jobs:", error);
+        setLoading(false);
+        setRefreshing(false);
+      }
+    );
+
+    return unsubscribe;
+  }, [activeTab, user?.uid]);
+
+  React.useEffect(() => {
+    const unsubscribe = fetchJobs();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [fetchJobs]);
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
-  }, []);
-
-  const data = [{ id: "1", status: activeTab.toLowerCase() }];
+    fetchJobs();
+  }, [fetchJobs]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -57,23 +104,34 @@ const JobsScreen: React.FC = () => {
         ))}
       </View>
 
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <BookedJobsCard status={item.status as any} />
-        )}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={["#8B5CF6"]}
-            tintColor="#8B5CF6"
-          />
-        }
-      />
+      {loading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#8B5CF6" />
+        </View>
+      ) : (
+        <FlatList
+          data={jobs}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <BookedJobsCard job={item} />}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#8B5CF6"]}
+              tintColor="#8B5CF6"
+            />
+          }
+          ListEmptyComponent={
+            <View style={{ padding: 20, alignItems: "center" }}>
+              <Text style={{ color: "#666", fontSize: 16 }}>
+                No {activeTab} jobs found.
+              </Text>
+            </View>
+          }
+        />
+      )}
 
       <TouchableOpacity
         style={styles.fab}
@@ -90,7 +148,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     position: "relative",
-    overflow: "hidden",
   },
   headerWrapper: {
     position: "absolute",
@@ -113,11 +170,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
     marginTop: 150,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
   tabItem: {
     paddingVertical: 8,
@@ -130,11 +182,6 @@ const styles = StyleSheet.create({
   tabItemActive: {
     backgroundColor: "#8C52FF",
     borderColor: "#8C52FF",
-    shadowColor: "#8C52FF",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
   },
   tabText: {
     fontSize: 14,
@@ -151,6 +198,11 @@ const styles = StyleSheet.create({
     width: screenWidth,
     paddingHorizontal: 20,
     paddingTop: 20,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   fab: {
     position: "absolute",

@@ -8,9 +8,9 @@ export default function JobTabBar({ activeTab, setActiveTab }: { activeTab: stri
         <Text style={[styles.tabText, activeTab === 'Jobs For You' && styles.activeTabText]}>Jobs For You</Text>
         {activeTab === 'Jobs For You' && <View style={styles.underline} />}
       </TouchableOpacity>
-      <TouchableOpacity style={styles.tab} onPress={() => setActiveTab('Bookmark Jobs')}>
-        <Text style={[styles.tabText, activeTab === 'Bookmark Jobs' && styles.activeTabText]}>Bookmark Jobs</Text>
-        {activeTab === 'Bookmark Jobs' && <View style={styles.underline} />}
+      <TouchableOpacity style={styles.tab} onPress={() => setActiveTab('Accepted Jobs')}>
+        <Text style={[styles.tabText, activeTab === 'Accepted Jobs' && styles.activeTabText]}>Accepted Jobs</Text>
+        {activeTab === 'Accepted Jobs' && <View style={styles.underline} />}
       </TouchableOpacity>
     </View>
   );

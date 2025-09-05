@@ -13,7 +13,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import InputField from "../components/InputField";
 import Button from "../components/SignUpButton";
-import SocialButton from "../components/SocialLogin";
 import { useRouter } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -33,7 +32,6 @@ const SignUp = () => {
   const [password, setPassword] = React.useState("");
   const [address, setAddress] = React.useState("Cebu City");
   const [phoneNumber, setPhoneNumber] = React.useState("");
-  const [pincode, setPincode] = React.useState("1111");
   const [profileImage, setProfileImage] = React.useState<string | null>(null);
   const [isUploading, setIsUploading] = React.useState(false);
 
@@ -79,9 +77,7 @@ const SignUp = () => {
       }
 
       const response = await fetch(uri);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-      }
+      if (!response.ok) throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
 
       const blob = await response.blob();
       const imageRef = ref(storage, `profile-images/${userId}/${Date.now()}.jpg`);
@@ -89,6 +85,7 @@ const SignUp = () => {
       return await getDownloadURL(imageRef);
     } catch (error) {
       console.error("Error uploading image:", error);
+      showAlert("Image Upload Failed", "Your account will still be created, but profile image upload failed.");
       return null;
     } finally {
       setIsUploading(false);
@@ -116,7 +113,6 @@ const SignUp = () => {
         lastName,
         address,
         phoneNumber,
-        pincode,
         profileImageUrl,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -159,7 +155,6 @@ const SignUp = () => {
       if (!saved) return;
 
       await setUserDocumentId(user.uid);
-
       router.push("/");
     } catch (error: any) {
       let message = "An unexpected error occurred. Please try again later.";
@@ -172,10 +167,6 @@ const SignUp = () => {
       }
       showAlert("Sign Up Failed", message);
     }
-  };
-
-  const navigateLogin = () => {
-    router.push("/authentication/Login");
   };
 
   return (
@@ -196,7 +187,6 @@ const SignUp = () => {
           <InputField label="Last Name" required value={lastName} onChangeText={setLastName} style={styles.fieldSpacing} />
           <InputField label="Phone Number" value={phoneNumber} onChangeText={setPhoneNumber} style={styles.fieldSpacing} />
           <InputField label="Address" value={address} onChangeText={setAddress} style={styles.fieldSpacing} />
-          <InputField label="Pincode" value={pincode} onChangeText={setPincode} style={styles.fieldSpacing} />
 
           <View style={styles.fieldSpacing}>
             <Text style={styles.fieldLabel}>Profile Picture</Text>
@@ -219,7 +209,7 @@ const SignUp = () => {
           <Button title="Create Account" onPress={handleSignUp} />
           <TouchableOpacity style={styles.loginContainer}>
             <Text style={styles.loginText}>
-              Already have an account? <Text style={styles.loginLink} onPress={navigateLogin}>Login</Text>
+              Already have an account? <Text style={styles.loginLink} onPress={() => router.push("/authentication/Login")}>Login</Text>
             </Text>
           </TouchableOpacity>
         </View>

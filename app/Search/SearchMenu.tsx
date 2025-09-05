@@ -1,60 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NavigationProp } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../../firebaseConfig'; // adjust path if needed
 import SearchBar from './components/SearchBar';
 import PopularSearchSection from './components/PopularSearchSection';
 import TopServiceSection from './components/TopServiceSection';
 
-type RootStackParamList = {
-  'Search/SearchResults': {
-    query: string;
-    results: any[];
-  };
-};
-
 const SearchMenu = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-
-  const seekers = [
-    {
-      id: '1',
-      firstName: 'Matt',
-      lastName: 'Dawner',
-      profile: {
-        jobTitle: 'Electrician',
-        ratings: 4.8,
-        yearsOfExperience: 5,
-        skills: ['Electrical wiring', 'Circuit repair', 'Installation'],
-        location: 'Antipolo, Rizal'
-      }
-    },
-    {
-      id: '2',
-      firstName: 'Jay',
-      lastName: 'Noman',
-      profile: {
-        jobTitle: 'Plumber',
-        ratings: 4.6,
-        yearsOfExperience: 3,
-        skills: ['Pipe repair', 'Drainage', 'Installation'],
-        location: 'Cainta, Rizal'
-      }
-    },
-    {
-      id: '3',
-      firstName: 'Fiona',
-      lastName: 'Harke',
-      profile: {
-        jobTitle: 'Carpenter',
-        ratings: 4.9,
-        yearsOfExperience: 7,
-        skills: ['Woodworking', 'Furniture repair', 'Installation'],
-        location: 'Binangonan, Rizal'
-      }
-    }
-  ];
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
@@ -62,43 +18,37 @@ const SearchMenu = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
-      const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.EXPO_PUBLIC_OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a recommendation engine that ranks job seekers based on a search query and their profile details.'
-            },
-            {
-              role: 'user',
-              content: `Search term: "${searchQuery}". Here is the list of seekers in JSON format: ${JSON.stringify(seekers)}. Rank them from best to least relevant for this job type. Return only an array of seeker IDs in ranked order.`
-            }
-          ]
-        })
-      });
+      // Firestore query (jobTitle search)
+      const seekersRef = collection(db, 'seekers');
+      const q = query(
+        seekersRef,
+        where('profile.jobTitle', '>=', searchQuery),
+        where('profile.jobTitle', '<=', searchQuery + '\uf8ff')
+      );
 
-      const aiData = await aiResponse.json();
-      const rankedIds = JSON.parse(aiData.choices[0].message.content);
+      const snapshot = await getDocs(q);
+      const seekers = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-      const rankedSeekers = rankedIds
-        .map((id: string) => seekers.find(seeker => seeker.id === id))
-        .filter(Boolean);
-
-      navigation.navigate('Search/SearchResults', {
-        query: searchQuery,
-        results: rankedSeekers
-      });
-
+      if (seekers.length === 0) {
+        Alert.alert('No results', 'No seekers match your search');
+      } else {
+        // Navigate with query parameter
+        router.push({
+          pathname: '/Search/SearchResults',
+          params: { query: searchQuery }, // will become ?query=Electrical
+        });
+      }
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error searching');
+      console.error('Error fetching seekers:', error);
+      Alert.alert('Error', 'Something went wrong while searching.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -111,9 +61,8 @@ const SearchMenu = () => {
           onChangeText={setSearchQuery}
           onClear={() => setSearchQuery('')}
         />
-
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>Search</Text>
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch} disabled={loading}>
+          <Text style={styles.searchButtonText}>{loading ? 'Searching...' : 'Search'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -124,8 +73,8 @@ const SearchMenu = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
+  container: {
+    flex: 1,
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingTop: 20,
