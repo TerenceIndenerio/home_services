@@ -111,8 +111,8 @@ const styles = StyleSheet.create({
   },
   bannerImageContainer: {
     position: "relative",
-    width: width - 20, // full width minus padding
-    aspectRatio: 1.8, // keeps consistent height across devices
+    width: width - 20, 
+    aspectRatio: 1.8, 
     borderRadius: 20,
     overflow: "hidden",
     marginRight: 10,

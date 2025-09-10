@@ -18,28 +18,28 @@ export const Login: React.FC<LoginProps> = () => {
   const [errorModalVisible, setErrorModalVisible] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
 
-  // 🔹 Check hasSetup (onBoarding) on mount
+  // 🔹 Check hasSetup on mount
   React.useEffect(() => {
     const checkHasSetup = async () => {
       try {
-        const value = await AsyncStorage.getItem("onBoard");
+        const value = await AsyncStorage.getItem("hasSetup");
         if (!value) {
           router.replace("/authentication/OnBoardingScreen");
         }
       } catch (err) {
-        console.error("Error reading onBoard from AsyncStorage:", err);
+        console.error("Error reading hasSetup from AsyncStorage:", err);
       }
     };
 
     checkHasSetup();
   }, []);
 
-  // 🔹 Fetch user data on component load
+  
   React.useEffect(() => {
     const fetchUserData = async () => {
       try {
         console.log("Attempting to fetch user data...");
-        // TODO: Replace with dynamic user ID
+        
         const userDocRef = doc(db, "users", "j9Tvehvtg5FrYFMHhtWn");
         const userDoc = await getDoc(userDocRef);
 
@@ -66,7 +66,7 @@ export const Login: React.FC<LoginProps> = () => {
     }
 
     try {
-      // TODO: Replace with dynamic user ID
+      
       const userDocRef = doc(db, "users", "j9Tvehvtg5FrYFMHhtWn");
       const userDoc = await getDoc(userDocRef);
 

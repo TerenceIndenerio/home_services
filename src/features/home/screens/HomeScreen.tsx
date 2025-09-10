@@ -25,7 +25,7 @@ const HomeScreen: React.FC = () => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    // trigger reload logic in your sections
+    
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
@@ -36,7 +36,7 @@ const HomeScreen: React.FC = () => {
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-        {/* Fixed Header */}
+        {}
         <View
           style={styles.headerWrapper}
           onLayout={(event) => {
@@ -47,7 +47,7 @@ const HomeScreen: React.FC = () => {
           <Header />
         </View>
 
-        {/* Scrollable Content */}
+        {}
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
@@ -61,7 +61,7 @@ const HomeScreen: React.FC = () => {
             />
           }
         >
-          {/* Spacer equal to header height */}
+          {}
           <View style={{ height: headerHeight }} />
 
           <View style={styles.contentWrapper}>

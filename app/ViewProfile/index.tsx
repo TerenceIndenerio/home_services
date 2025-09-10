@@ -54,8 +54,8 @@ const ViewProfile = () => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    // Add any data fetching logic here
-    // For example, refetch profile data
+    
+    
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
@@ -74,7 +74,7 @@ const ViewProfile = () => {
           />
         }
       >
-        {/* Profile Image with Back Button */}
+        {}
         <View style={{ position: "relative", alignItems: "center" }}>
           <Image
             source={{ uri: String(imageUrl) }}
@@ -96,9 +96,9 @@ const ViewProfile = () => {
               padding: 8,
             }}
             onPress={() => {
-              // Try to go back, but if not possible, go to home
+              
               try {
-                // @ts-ignore: canGoBack may not exist in expo-router, fallback to push
+                
                 if (router.canGoBack && router.canGoBack()) {
                   router.back();
                 } else {
@@ -113,7 +113,7 @@ const ViewProfile = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Name, Title, Actions */}
+        {}
         <View style={{ flexDirection: "row", alignItems: "center", marginTop: 18, marginHorizontal: 20 }}>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 26, fontWeight: "700", color: "#222" }}>{provider}</Text>
@@ -127,7 +127,7 @@ const ViewProfile = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Info Cards */}
+        {}
         <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 22, marginHorizontal: 20 }}>
           <View style={styles.infoCard}>
             <FontAwesome name="star" size={22} color="#FF6B35" />
@@ -146,7 +146,7 @@ const ViewProfile = () => {
           </View>
         </View>
 
-        {/* Availability */}
+        {}
         <View style={{ marginTop: 28, marginHorizontal: 20 }}>
           <Text style={{ fontWeight: "700", fontSize: 16, marginBottom: 8 }}>Available</Text>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -160,7 +160,7 @@ const ViewProfile = () => {
           </View>
         </View>
 
-        {/* Book Button */}
+        {}
         <TouchableOpacity
           style={styles.bookButton}
           onPress={() => setModalVisible(true)}
@@ -170,7 +170,7 @@ const ViewProfile = () => {
 
         <AboutSection about={about} />
 
-        {/* Gallery */}
+        {}
         <View style={{ marginTop: 28, marginHorizontal: 0 }}></View>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20 }}>
           <Text style={{ fontWeight: "700", fontSize: 16 }}>Gallery</Text>
@@ -195,7 +195,7 @@ const ViewProfile = () => {
           ))}
         </ScrollView>
 
-        {/* Reviews */}
+        {}
         <View style={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 32 }}>
           <Text style={{ fontWeight: "700", fontSize: 18, marginBottom: 16 }}>Review</Text>
           {

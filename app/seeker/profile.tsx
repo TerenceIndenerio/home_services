@@ -14,6 +14,7 @@ import { getAuth } from "firebase/auth";
 import { db } from "../../firebaseConfig";
 import { useAuth } from "../../src/features/auth/context/authContext";
 import { logout } from "../../src/utils/authUtils";
+import Loader from "../../src/components/Loader";
 
 const getUserProfile = async (userId: string) => {
   try {
@@ -40,9 +41,8 @@ const AccountProfile = () => {
   const [isJobSeeker, setIsJobSeeker] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState(
-    "https://randomuser.me/api/portraits/men/32.jpg"
-  );
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -88,6 +88,7 @@ const AccountProfile = () => {
     if (!userDocumentId) return;
     const newValue = !isJobSeeker;
     setIsJobSeeker(newValue);
+    setUpdating(true);
 
     try {
       const userRef = doc(db, "users", userDocumentId);
@@ -110,85 +111,90 @@ const AccountProfile = () => {
       console.error("Failed to update isJobSeeker:", error);
       setIsJobSeeker(!newValue);
       Alert.alert("Error", "Failed to update role. Please try again.");
+    } finally {
+      setUpdating(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.profileSection}>
-        <View style={styles.avatarContainer}>
-          <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+    <>
+      <View style={styles.container}>
+        <View style={styles.profileSection}>
+          <View style={styles.avatarContainer}>
+            <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => router.push("/SeekerEditProfileScreen")}
+            >
+              <Ionicons name="camera" size={16} color="#fff" />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.userName}>{userName || "User Name"}</Text>
+          <Text style={styles.userRole}>
+            {isJobSeeker ? "Job Seeker" : "Service Provider"}
+          </Text>
           <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => router.push("/SeekerEditProfileScreen")}
+            style={styles.toggleButton}
+            onPress={toggleJobSeeker}
           >
-            <Ionicons name="camera" size={16} color="#fff" />
+            <Text style={styles.toggleButtonText}>
+              Switch to Service Provider
+            </Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.userName}>{userName || "User Name"}</Text>
-        <Text style={styles.userRole}>
-          {isJobSeeker ? "Job Seeker" : "Service Provider"}
-        </Text>
+
+        <View style={styles.actionsSection}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/SeekerEditProfileScreen")}
+          >
+            <Ionicons name="create-outline" size={20} color="#8C52FF" />
+            <Text style={styles.actionButtonText}>Edit Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() =>
+              isJobSeeker
+                ? router.push("/seeker/profile")
+                : router.push("/ServiceProviderDashboard")
+            }
+          >
+            <Ionicons name="stats-chart-outline" size={20} color="#8C52FF" />
+            <Text style={styles.actionButtonText}>Dashboard</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/Messages/MessagesListScreen")}
+          >
+            <Ionicons name="chatbubbles-outline" size={20} color="#8C52FF" />
+            <Text style={styles.actionButtonText}>Messages</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/Bookings")}
+          >
+            <Ionicons name="calendar-outline" size={20} color="#8C52FF" />
+            <Text style={styles.actionButtonText}>Bookings</Text>
+          </TouchableOpacity>
+        </View>
+
         <TouchableOpacity
-          style={styles.toggleButton}
-          onPress={toggleJobSeeker}
+          style={styles.logoutButton}
+          onPress={async () => {
+            try {
+              await logout();
+              router.replace("/authentication/Login");
+            } catch (error) {
+              console.error("Logout failed:", error);
+            }
+          }}
         >
-          <Text style={styles.toggleButtonText}>
-            Switch to {isJobSeeker ? "Service Provider" : "Job Seeker"}
-          </Text>
+          <Ionicons name="log-out-outline" size={20} color="#FF6B6B" />
+          <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
       </View>
-
-      <View style={styles.actionsSection}>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => router.push("/SeekerEditProfileScreen")}
-        >
-          <Ionicons name="create-outline" size={20} color="#8C52FF" />
-          <Text style={styles.actionButtonText}>Edit Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() =>
-            isJobSeeker
-              ? router.push("/seeker/profile")
-              : router.push("/ServiceProviderDashboard")
-          }
-        >
-          <Ionicons name="stats-chart-outline" size={20} color="#8C52FF" />
-          <Text style={styles.actionButtonText}>Dashboard</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => router.push("/Messages/MessagesListScreen")}
-        >
-          <Ionicons name="chatbubbles-outline" size={20} color="#8C52FF" />
-          <Text style={styles.actionButtonText}>Messages</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => router.push("/Bookings")}
-        >
-          <Ionicons name="calendar-outline" size={20} color="#8C52FF" />
-          <Text style={styles.actionButtonText}>Bookings</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity
-        style={styles.logoutButton}
-        onPress={async () => {
-          try {
-            await logout();
-            router.replace("/authentication/Login");
-          } catch (error) {
-            console.error("Logout failed:", error);
-          }
-        }}
-      >
-        <Ionicons name="log-out-outline" size={20} color="#FF6B6B" />
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
-    </View>
+      <Loader visible={updating} text="Updating role..." />
+    </>
   );
 };
 

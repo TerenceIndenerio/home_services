@@ -12,7 +12,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { Ionicons } from "@expo/vector-icons";
-import { WebView } from "react-native-webview"; // ✅ added
+import { WebView } from "react-native-webview"; 
 
 const { width, height } = Dimensions.get("window");
 
@@ -127,7 +127,7 @@ const BookingMap = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => {
@@ -148,7 +148,7 @@ const BookingMap = () => {
         <View style={{ width: 24 }} />
       </View>
 
-      {/* ✅ Show map in WebView (mobile) or iframe (web) */}
+      {}
       {iframeHtml && (
         Platform.OS === "web" ? (
           <iframe title="Job Location Map" srcDoc={iframeHtml} style={styles.iframe} />
@@ -161,7 +161,7 @@ const BookingMap = () => {
         )
       )}
 
-      {/* Location Info Card */}
+      {}
       <View style={styles.infoCard}>
         <View style={styles.infoHeader}>
           <Ionicons name="location" size={20} color="#007AFF" />

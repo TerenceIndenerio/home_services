@@ -12,7 +12,7 @@ interface Props {
 };
 
 const SearchBar = ({ Placeholder, value, onChangeText, onPress, onClear, }: Props) => {
-  // const [, setSearchQuery] = useState('');
+  
 
   return (
     <View style={styles.searchInputWrapper}>

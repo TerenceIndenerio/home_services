@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from "react-native";
+import Colors from "../../../../app/constants/Colors";
 
 interface ServiceCardProps {
   imageUrl: string;
@@ -47,17 +48,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     overflow: "hidden",
     height: "100%",
-    width: 183,
-    backgroundColor: "#ffffff",
-    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+    backgroundColor: Colors.background,
+    shadowColor: Colors.darkGray,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
     borderWidth: 1,
-    borderColor: "#f0f0f0",
+    borderColor: Colors.border,
   },
 
   serviceImage: {
     width: "100%",
     height: 120,
     resizeMode: "cover",
+    borderRadius: 10,
   },
   infoContainer: {
     padding: 0,
@@ -66,12 +71,12 @@ const styles = StyleSheet.create({
   serviceTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#333",
+    color: Colors.text,
     marginBottom: 4,
   },
   providerName: {
     fontSize: 12,
-    color: "#666",
+    color: Colors.textSecondary,
     marginBottom: 8,
   },
   ratingContainer: {
@@ -81,12 +86,12 @@ const styles = StyleSheet.create({
   ratingStar: {
     fontSize: 14,
     marginRight: 4,
-    color: "#FFD700",
+    color: Colors.secondary,
   },
   ratingText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#333",
+    color: Colors.text,
   },
 });
 

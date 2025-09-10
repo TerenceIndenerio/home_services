@@ -26,7 +26,7 @@ export const MPINInput: React.FC<MPINInputProps> = () => {
   );
 };
 
-// Default export to satisfy Expo Router
+
 export default MPINInput;
 
 const styles = StyleSheet.create({

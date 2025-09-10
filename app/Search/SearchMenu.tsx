@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebaseConfig'; // adjust path if needed
+import { db } from '../../firebaseConfig'; 
 import SearchBar from './components/SearchBar';
 import PopularSearchSection from './components/PopularSearchSection';
 import TopServiceSection from './components/TopServiceSection';
@@ -21,7 +21,7 @@ const SearchMenu = () => {
     setLoading(true);
 
     try {
-      // Firestore query (jobTitle search)
+      
       const seekersRef = collection(db, 'seekers');
       const q = query(
         seekersRef,
@@ -38,10 +38,10 @@ const SearchMenu = () => {
       if (seekers.length === 0) {
         Alert.alert('No results', 'No seekers match your search');
       } else {
-        // Navigate with query parameter
+        
         router.push({
           pathname: '/Search/SearchResults',
-          params: { query: searchQuery }, // will become ?query=Electrical
+          params: { query: searchQuery }, 
         });
       }
     } catch (error) {

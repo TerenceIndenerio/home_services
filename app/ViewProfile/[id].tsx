@@ -88,12 +88,12 @@ const ViewProfileById = () => {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        {/* Scrollable content */}
+        {}
         <ScrollView
           contentContainerStyle={{ paddingBottom: insets.bottom + 120 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header image + back */}
+          {}
           <View style={{ position: "relative", alignItems: "center" }}>
             <Image
               source={{
@@ -125,7 +125,7 @@ const ViewProfileById = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Name, Title, Actions */}
+          {}
           <View
             style={{
               flexDirection: "row",
@@ -154,7 +154,7 @@ const ViewProfileById = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Info Cards */}
+          {}
           <View
             style={{
               flexDirection: "row",
@@ -203,7 +203,7 @@ const ViewProfileById = () => {
             </View>
           </View>
 
-          {/* About Section */}
+          {}
           <AboutSection
             about={
               (profile?.profile?.bio || "No bio provided.") +

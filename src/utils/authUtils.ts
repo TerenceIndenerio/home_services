@@ -4,15 +4,15 @@ import { auth } from '@/firebaseConfig';
 
 export const logout = async () => {
   try {
-    // Sign out from Firebase
+    
     await signOut(auth);
     
-    // Clear all auth-related data from AsyncStorage
+    
     await AsyncStorage.multiRemove([
       'user_document_id',
       'sessionExpiresAt',
       'user_names',
-      'onBoard'
+      'hasSetup'
     ]);
     
     console.log('Logout successful');

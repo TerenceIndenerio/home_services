@@ -12,6 +12,7 @@ import "react-native-reanimated";
 import { AuthProvider } from "../src/features/auth/context/authContext";
 import { useColorScheme } from "../src/utils/useColorScheme";
 import { Provider } from "@ant-design/react-native";
+import AuthGuard from "./authentication/AuthGuard";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -51,15 +52,16 @@ function RootLayoutNav() {
     <Provider>
       <AuthProvider>
         <ThemeProvider value={DefaultTheme}>
-          <Stack 
-            initialRouteName="(tabs)"
-            screenOptions={{
-              headerShown: false,
-              contentStyle: {
-                backgroundColor: '#fff',
-              },
-            }}
-          >
+          <AuthGuard>
+            <Stack
+              initialRouteName="(tabs)"
+              screenOptions={{
+                headerShown: false,
+                contentStyle: {
+                  backgroundColor: '#fff',
+                },
+              }}
+            >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: "modal" }} />
             <Stack.Screen
@@ -167,7 +169,12 @@ function RootLayoutNav() {
               name="soon"
               options={{ headerShown: false }}
             />
+            <Stack.Screen
+              name="seeker"
+              options={{ headerShown: false }}
+            />
           </Stack>
+          </AuthGuard>
         </ThemeProvider>
       </AuthProvider>
     </Provider>

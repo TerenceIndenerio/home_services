@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  Switch,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -14,6 +15,7 @@ import { getAuth } from "firebase/auth";
 import { db } from "../../firebaseConfig";
 import { useAuth } from "../../src/features/auth/context/authContext";
 import { logout } from "../../src/utils/authUtils";
+import Loader from "../../src/components/Loader";
 
 const getUserProfile = async (userId: string) => {
   try {
@@ -38,11 +40,11 @@ const AccountProfile = () => {
   const router = useRouter();
   const { userDocumentId } = useAuth();
   const [isJobSeeker, setIsJobSeeker] = useState(false);
+  const [showSwitchButton, setShowSwitchButton] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState(
-    "https://randomuser.me/api/portraits/men/32.jpg"
-  );
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -84,15 +86,15 @@ const AccountProfile = () => {
     fetchUserData();
   }, [userDocumentId]);
 
-  const toggleJobSeeker = async () => {
+  const toggleJobSeeker = async (value: boolean, shouldNavigate: boolean = true) => {
     if (!userDocumentId) return;
-    const newValue = !isJobSeeker;
-    setIsJobSeeker(newValue);
+    setIsJobSeeker(value);
+    setUpdating(true);
 
     try {
       const userRef = doc(db, "users", userDocumentId);
-      await updateDoc(userRef, { isJobSeeker: newValue });
-      console.log("Updated isJobSeeker to:", newValue);
+      await updateDoc(userRef, { isJobSeeker: value });
+      console.log("Updated isJobSeeker to:", value);
 
       const auth = getAuth();
       const currentUser = auth.currentUser;
@@ -101,99 +103,120 @@ const AccountProfile = () => {
         console.log("ID Token after toggle:", idToken);
       }
 
-      // Redirect based on role
-      if (newValue) {
-        router.push("/seeker/profile");
-      } else {
-        router.push("/ServiceProviderDashboard");
+
+      if (shouldNavigate) {
+        if (value) {
+          router.push("/seeker/profile");
+        } else {
+          router.push("/tabThree");
+        }
       }
+
     } catch (error) {
       console.error("Failed to update isJobSeeker:", error);
-      setIsJobSeeker(!newValue);
+      setIsJobSeeker(!value);
       Alert.alert("Error", "Failed to update role. Please try again.");
+    } finally {
+      setUpdating(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.profileSection}>
-        <View style={styles.avatarContainer}>
-          <Image source={{ uri: avatarUrl }} style={styles.avatar} />
-          <TouchableOpacity style={styles.editButton}>
-            <Ionicons name="camera" size={16} color="#fff" />
+    <>
+      <View style={styles.container}>
+        <View style={styles.profileSection}>
+          <View style={styles.avatarContainer}>
+            <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+            <TouchableOpacity style={styles.editButton}>
+              <Ionicons name="camera" size={16} color="#fff" />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.userName}>{userName || "User Name"}</Text>
+          <Text style={styles.userRole}>
+            {isJobSeeker ? "Job Seeker" : "Service Provider"}
+          </Text>
+          {showSwitchButton && (
+            <TouchableOpacity
+              style={styles.toggleButton}
+              onPress={() => toggleJobSeeker(!isJobSeeker)}
+            >
+              <Text style={styles.toggleButtonText}>
+                Switch to Job Seeker
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <View style={styles.statsSection}>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>127</Text>
+            <Text style={styles.statLabel}>Completed Jobs</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>4.8</Text>
+            <Text style={styles.statLabel}>Rating</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>₱125K</Text>
+            <Text style={styles.statLabel}>Total Earnings</Text>
+          </View>
+        </View>
+
+        <View style={styles.toggleSection}>
+          <Text style={styles.toggleLabel}>Job Seeker Mode</Text>
+          <Switch
+            value={showSwitchButton}
+            onValueChange={setShowSwitchButton}
+            disabled={loading}
+            trackColor={{ false: "#767577", true: "#8B5CF6" }}
+            thumbColor={showSwitchButton ? "#f4f3f4" : "#f4f3f4"}
+          />
+        </View>
+
+        <View style={styles.actionsSection}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/SeekerEditProfileScreen")}
+          >
+            <Ionicons name="create-outline" size={20} color="#8C52FF" />
+            <Text style={styles.actionButtonText}>Edit Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => {
+              if (isJobSeeker) {
+                router.push("/seeker/profile");
+              } else {
+                router.push("/ServiceProviderDashboard");
+              }
+            }}
+          >
+            <Ionicons name="stats-chart-outline" size={20} color="#8C52FF" />
+            <Text style={styles.actionButtonText}>Dashboard</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/Messages/MessagesListScreen")}
+          >
+            <Ionicons name="chatbubbles-outline" size={20} color="#8C52FF" />
+            <Text style={styles.actionButtonText}>Messages</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/Bookings")}
+          >
+            <Ionicons name="calendar-outline" size={20} color="#8C52FF" />
+            <Text style={styles.actionButtonText}>Bookings</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.userName}>{userName || "User Name"}</Text>
-        <Text style={styles.userRole}>
-          {isJobSeeker ? "Job Seeker" : "Service Provider"}
-        </Text>
-        <TouchableOpacity
-          style={styles.toggleButton}
-          onPress={toggleJobSeeker}
-        >
-          <Text style={styles.toggleButtonText}>
-            Switch to {isJobSeeker ? "Service Provider" : "Job Seeker"}
-          </Text>
+
+        <TouchableOpacity style={styles.logoutButton} onPress={() => logout()}>
+          <Ionicons name="log-out-outline" size={20} color="#FF6B6B" />
+          <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
       </View>
-
-      <View style={styles.statsSection}>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>127</Text>
-          <Text style={styles.statLabel}>Completed Jobs</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>4.8</Text>
-          <Text style={styles.statLabel}>Rating</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>₱125K</Text>
-          <Text style={styles.statLabel}>Total Earnings</Text>
-        </View>
-      </View>
-
-      <View style={styles.actionsSection}>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => router.push("/SeekerEditProfileScreen")}
-        >
-          <Ionicons name="create-outline" size={20} color="#8C52FF" />
-          <Text style={styles.actionButtonText}>Edit Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => {
-            if (isJobSeeker) {
-              router.push("/seeker/profile");
-            } else {
-              router.push("/ServiceProviderDashboard");
-            }
-          }}
-        >
-          <Ionicons name="stats-chart-outline" size={20} color="#8C52FF" />
-          <Text style={styles.actionButtonText}>Dashboard</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => router.push("/Messages/MessagesListScreen")}
-        >
-          <Ionicons name="chatbubbles-outline" size={20} color="#8C52FF" />
-          <Text style={styles.actionButtonText}>Messages</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => router.push("/Bookings")}
-        >
-          <Ionicons name="calendar-outline" size={20} color="#8C52FF" />
-          <Text style={styles.actionButtonText}>Bookings</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-        <Ionicons name="log-out-outline" size={20} color="#FF6B6B" />
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
-    </View>
+      <Loader visible={updating} text="Updating role..." />
+    </>
   );
 };
 
@@ -279,6 +302,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#666",
     textAlign: "center",
+  },
+  toggleSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+    padding: 20,
+    marginBottom: 20,
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  toggleLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
   },
   actionsSection: {
     backgroundColor: "#fff",

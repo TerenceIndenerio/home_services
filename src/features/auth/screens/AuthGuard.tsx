@@ -4,41 +4,33 @@ import { AuthContext } from "../context/authContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, ActivityIndicator } from "react-native";
 
-const SESSION_KEY = "sessionExpiresAt";
-const HAS_SETUP_KEY = "onBoard";
+const HAS_SETUP_KEY = "hasSetup";
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useContext(AuthContext);
   const [checking, setChecking] = useState(true);
-  const [hasSetup, setHasSetup] = useState<boolean>(false);
-
-  const isSessionExpired = async () => {
-    const session = await AsyncStorage.getItem(SESSION_KEY);
-    if (!session) return true;
-    const expiresAt = parseInt(session, 10);
-    return Date.now() >= expiresAt;
-  };
+  const [redirectHref, setRedirectHref] = useState<string | null>(null);
 
   useEffect(() => {
     const runCheck = async () => {
-      if (!loading && !user) {
-        const expired = await isSessionExpired();
-
-        if (!expired) {
-          // Session still valid → treat like setup is done
-          setHasSetup(true);
+      if (!loading) {
+        if (user) {
+          
+          setChecking(false);
         } else {
-          // Session expired → check onboarding
+          
           const setup = await AsyncStorage.getItem(HAS_SETUP_KEY);
-          setHasSetup(!!setup);
+          const setupBoolean = !!setup;
+          const href = setupBoolean ? "/authentication/Login" : "/authentication/OnBoardingScreen";
+          setRedirectHref(href);
+          setChecking(false);
         }
       }
-      setChecking(false);
     };
     runCheck();
   }, [user, loading]);
 
-  // While checking authentication/session
+  
   if (loading || checking) {
     return (
       <View
@@ -54,20 +46,12 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // No user → redirect
-  if (!user) {
-    return (
-      <Redirect
-        href={
-          hasSetup
-            ? "/authentication/PinCode"
-            : "/authentication/OnBoardingScreen"
-        }
-      />
-    );
+  
+  if (!user && redirectHref) {
+    return <Redirect href={redirectHref} />;
   }
 
-  // User authenticated → render protected content
+  
   return <>{children}</>;
 };
 

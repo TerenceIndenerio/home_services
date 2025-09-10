@@ -8,7 +8,7 @@ const ServiceDetails: React.FC = () => {
   const [detailsOpen, setDetailsOpen] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Dummy data for now
+  
   const customer = {
     name: 'Arabela Justine Manuta',
     image: 'https://randomuser.me/api/portraits/women/44.jpg',
@@ -21,8 +21,8 @@ const ServiceDetails: React.FC = () => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    // Add any data fetching logic here
-    // For example, refetch service details
+    
+    
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
@@ -30,7 +30,7 @@ const ServiceDetails: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {}
       <View style={styles.header}>
         <TouchableOpacity>
           <Ionicons name="arrow-back" size={24} color="#fff" />
@@ -39,7 +39,7 @@ const ServiceDetails: React.FC = () => {
         <Text style={styles.timer}>60s</Text>
       </View>
 
-      {/* Map Section (placeholder) */}
+      {}
       <View style={styles.mapSection}>
         <Ionicons name="location" size={40} color="#8C52FF" style={{ alignSelf: 'center', marginTop: 30 }} />
         <View style={styles.mapPin} />
@@ -56,7 +56,7 @@ const ServiceDetails: React.FC = () => {
           />
         }
       >
-        {/* User Info */}
+        {}
         <View style={styles.userRow}>
           <Image source={{ uri: customer.image }} style={styles.avatar} />
           <View style={{ flex: 1, marginLeft: 10 }}>
@@ -68,13 +68,13 @@ const ServiceDetails: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Location Box */}
+        {}
         <View style={styles.infoBox}>
           <Text style={styles.infoLabel}>Location</Text>
           <Text style={styles.infoValue}>{customer.location}</Text>
         </View>
 
-        {/* Service Details Dropdown */}
+        {}
         <ServiceDetailsDropdown
           open={detailsOpen}
           onToggle={() => setDetailsOpen(!detailsOpen)}
@@ -84,7 +84,7 @@ const ServiceDetails: React.FC = () => {
         />
       </ScrollView>
 
-      {/* Action Buttons */}
+      {}
       <View style={styles.buttonRow}>
         <AuthButton text="Accept" variant="secondary" onPress={() => {}} style={{ flex: 1, marginRight: 8 }} />
         <AuthButton text="Decline" variant="primary" onPress={() => {}} style={{ flex: 1, marginLeft: 8 }} />

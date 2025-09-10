@@ -65,6 +65,8 @@ export default function JobsScreen() {
       return booking.status === 'pending';
     } else if (activeTab === 'Accepted Jobs') {
       return booking.status === 'accepted';
+    } else if (activeTab === 'On Going Job') {
+      return booking.status === 'ongoing';
     }
     return false;
   });

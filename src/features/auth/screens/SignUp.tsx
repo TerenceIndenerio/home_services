@@ -20,6 +20,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../../../../firebaseConfig";
 import ErrorModal from "../components/ErrorModal";
 import { useAuth } from "../context/authContext";
+import Loader from "../../../components/Loader";
 
 const SignUp = () => {
   const router = useRouter();
@@ -34,6 +35,7 @@ const SignUp = () => {
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [profileImage, setProfileImage] = React.useState<string | null>(null);
   const [isUploading, setIsUploading] = React.useState(false);
+  const [signingUp, setSigningUp] = React.useState(false);
 
   const [errorVisible, setErrorVisible] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
@@ -136,6 +138,7 @@ const SignUp = () => {
       return;
     }
 
+    setSigningUp(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -155,6 +158,10 @@ const SignUp = () => {
       if (!saved) return;
 
       await setUserDocumentId(user.uid);
+
+
+      await AsyncStorage.setItem("hasSetup", "true");
+
       router.push("/");
     } catch (error: any) {
       let message = "An unexpected error occurred. Please try again later.";
@@ -166,6 +173,8 @@ const SignUp = () => {
         message = "Password must be at least 6 characters long.";
       }
       showAlert("Sign Up Failed", message);
+    } finally {
+      setSigningUp(false);
     }
   };
 
@@ -214,6 +223,7 @@ const SignUp = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <Loader visible={signingUp} text="Creating account..." />
     </View>
   );
 };

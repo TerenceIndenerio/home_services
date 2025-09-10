@@ -24,11 +24,11 @@ import { useRouter } from "expo-router";
 const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {
   const { userDocumentId } = useAuth();
   const [status, setStatus] = useState<"idle" | "loading" | "sent">("idle");
-  const [modalVisible, setModalVisible] = useState(false);          // edit/review modal
-  const [successVisible, setSuccessVisible] = useState(false);       // ✅ success modal
+  const [modalVisible, setModalVisible] = useState(false);          
+  const [successVisible, setSuccessVisible] = useState(false);       
   const [provider, setProvider] = useState<any>(null);
 
-  // Debug logging
+  
   useEffect(() => {
     console.log("OnTheWayButton - Received bookingData:", bookingData);
     console.log("OnTheWayButton - Location data:", bookingData?.location);
@@ -74,11 +74,11 @@ const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {
     setModalVisible(false);
 
     try {
-      // Extract and validate location data
+      
       const latitude = bookingData.location?.latitude || bookingData.latitude;
       const longitude = bookingData.location?.longitude || bookingData.longitude;
       
-      // Validate coordinates
+      
       if (typeof latitude !== 'number' || typeof longitude !== 'number' || isNaN(latitude) || isNaN(longitude)) {
         console.error("OnTheWayButton - Invalid coordinates:", { latitude, longitude });
         throw new Error("Invalid coordinates provided");
@@ -87,10 +87,10 @@ const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {
       const data = {
         ...bookingData,
         ...editableData,
-        // Store location data as direct properties (as expected by BookingRequestsList)
+        
         latitude: latitude,
         longitude: longitude,
-        // Also keep the location object for backward compatibility
+        
         location: bookingData.location,
         providerId: bookingData.providerId || currentUserId,
         status: "pending",
@@ -100,7 +100,7 @@ const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {
       console.log("OnTheWayButton - Saving booking data:", data);
       await addDoc(collection(db, "bookings"), data);
 
-      // ✅ Success: lock button & show success modal
+      
       setStatus("sent");
       setSuccessVisible(true);
     } catch (error) {
@@ -129,7 +129,7 @@ const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {
         )}
       </TouchableOpacity>
 
-      {/* Review & Edit Modal */}
+      {}
       <Modal animationType="slide" transparent visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
@@ -178,7 +178,7 @@ const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {
               placeholder="Enter date (MM/DD/YYYY HH:MM)"
               value={editableData.scheduleDate.toLocaleString()}
               onChangeText={(text) => {
-                // Simple date parsing - you can type manually
+                
                 try {
                   const newDate = new Date(text);
                   if (!isNaN(newDate.getTime())) {
@@ -188,7 +188,7 @@ const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {
                     }));
                   }
                 } catch (error) {
-                  // If parsing fails, just store as string for now
+                  
                   console.log("Date parsing failed, storing as string");
                 }
               }}
@@ -213,7 +213,7 @@ const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {
         </View>
       </Modal>
 
-      {/* ✅ Success / Waiting Modal */}
+      {}
       <Modal
         animationType="fade"
         transparent

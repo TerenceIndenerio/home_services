@@ -101,18 +101,7 @@ export const LoginFooter: React.FC = () => {
           <Text style={styles.buttonText}>Email</Text>
         </TouchableOpacity>
 
-        {/* <TouchableOpacity style={styles.toolbarButton} onPress={navigateMPIN}>
-          <FontAwesome name="lock" size={20} color="#fff" style={styles.icon} />
-          <Text style={styles.buttonText}>MPIN</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.toolbarButton}
-          onPress={navigateBiometrics}
-        >
-          <FontAwesome name="user" size={20} color="#fff" style={styles.icon} />
-          <Text style={styles.buttonText}>Biometrics</Text>
-        </TouchableOpacity> */}
+        {}
 
         <View style={styles.toggleButton}>
           <TouchableOpacity onPress={toggleToolbar}>
@@ -135,7 +124,7 @@ export const LoginFooter: React.FC = () => {
   );
 };
 
-// Default export to satisfy Expo Router
+
 export default LoginFooter;
 
 const styles = StyleSheet.create({

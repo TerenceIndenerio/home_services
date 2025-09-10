@@ -25,7 +25,7 @@ type ChatScreenProps = {
   messages: ChatMessage[];
   userName: string;
   userRole: string;
-  userAvatar?: any; // ImageSourcePropType or undefined
+  userAvatar?: any; 
   onSend?: (text: string) => void;
 };
 
@@ -46,8 +46,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    // Add any data fetching logic here
-    // For example, refetch messages
+    
+    
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
@@ -124,11 +124,11 @@ const ChatScreen: React.FC<ChatScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => {
-            // Try to go back, but if not possible, go to home
+            
             try {
               if (navigation.canGoBack && navigation.canGoBack()) {
                 navigation.goBack();
@@ -156,7 +156,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({
         </TouchableOpacity>
       </View>
 
-      {/* Messages */}
+      {}
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -174,7 +174,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({
         }
       />
 
-      {/* Input */}
+      {}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={90}

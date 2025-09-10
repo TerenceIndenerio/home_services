@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, RefreshControl, View, Text } from "react-native
 import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { useUserDocumentId } from "../../src/hooks/useUserDocumentId";
+import Loader from "../../src/components/Loader";
 
 import Header from "../../src/features/seeker/components/Header";
 import BalanceCard from "../../src/features/seeker/components/BalanceCard";
@@ -32,8 +33,10 @@ export default function SeekerHomeScreen() {
   const [bookingRequests, setBookingRequests] = useState<BookingRequest[]>([]);
   const [bookingHistory, setBookingHistory] = useState<BookingRequest[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [fetching, setFetching] = useState(false);
 
   const fetchBookings = async () => {
+    setFetching(true);
     try {
       if (!userDocumentId) {
         console.error("No user document ID found.");
@@ -42,7 +45,7 @@ export default function SeekerHomeScreen() {
 
       const currentUserId = userDocumentId;
 
-      // Query Firestore for only bookings assigned to this provider
+
       const q = query(
         collection(db, "bookings"),
         where("userId", "==", currentUserId)
@@ -79,7 +82,7 @@ export default function SeekerHomeScreen() {
               serviceId: booking.serviceId,
               status: status,
             };
-            
+
 
             if (status === "pending") {
               pendingRequests.push(data);
@@ -94,6 +97,8 @@ export default function SeekerHomeScreen() {
       setBookingHistory(historyRequests);
     } catch (error) {
       console.error("Error fetching bookings with providers:", error);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -124,7 +129,7 @@ export default function SeekerHomeScreen() {
     })}`;
   };
 
-  // Show loading state while auth is loading
+  
   if (loading) {
     return (
       <ScrollView style={styles.container}>
@@ -138,34 +143,37 @@ export default function SeekerHomeScreen() {
   }
 
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={["#8B5CF6"]}
-          tintColor="#8B5CF6"
+    <>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#8B5CF6"]}
+            tintColor="#8B5CF6"
+          />
+        }
+      >
+        <Header status="Not Available" />
+        <BalanceCard balance={3200} style={styles.balanceCard} />
+        <BookingRequestsList
+          requests={bookingRequests}
+          style={styles.bookingRequestsList}
+          onStatusChange={onRefresh}
         />
-      }
-    >
-      <Header status="Not Available" />
-      <BalanceCard balance={3200} style={styles.balanceCard} />
-      <BookingRequestsList
-        requests={bookingRequests}
-        style={styles.bookingRequestsList}
-        onStatusChange={onRefresh}
-      />
-      <BookingHistoryList
-        history={bookingHistory.map((item) => ({
-          id: item.id,
-          job: item.job,
-          date: formatDate(item.scheduleDate || item.createdAt),
-          location: item.address || "No Address",
-          status: item.status || "",
-        }))}
-      />
-    </ScrollView>
+        <BookingHistoryList
+          history={bookingHistory.map((item) => ({
+            id: item.id,
+            job: item.job,
+            date: formatDate(item.scheduleDate || item.createdAt),
+            location: item.address || "No Address",
+            status: item.status || "",
+          }))}
+        />
+      </ScrollView>
+      <Loader visible={fetching} text="Fetching bookings..." />
+    </>
   );
 }
 

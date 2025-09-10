@@ -21,7 +21,7 @@ const OrderStatusScreen = () => {
         console.log("OrderStatusScreen - Location data:", parsed.location);
         console.log("OrderStatusScreen - userId from bookingData:", parsed.userId);
         setBookingDataState(parsed);
-        // Extract userId from bookingData to use as providerId
+        
         setProviderId(parsed.userId);
       } catch (error) {
         console.error("OrderStatusScreen - Error parsing bookingData:", error);

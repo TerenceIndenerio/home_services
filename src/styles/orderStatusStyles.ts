@@ -10,7 +10,7 @@ const COLORS = {
 };
 
 const styles = StyleSheet.create({
-  // Add shared styles here if needed
+  
 });
 
 export { COLORS };

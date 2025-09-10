@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
 const LogoutButton = () => {
   const handleLogout = () => {
-    // TODO: Implement logout logic
+    
   };
   return (
     <TouchableOpacity style={styles.button} onPress={handleLogout}>

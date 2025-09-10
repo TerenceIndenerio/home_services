@@ -17,8 +17,8 @@ const HomeScreen: React.FC = () => {
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
-        // Add any data fetching logic here
-        // For example, refetch profile data
+        
+        
         setTimeout(() => {
             setRefreshing(false);
         }, 1000);
@@ -27,10 +27,10 @@ const HomeScreen: React.FC = () => {
     return (
         <SafeAreaView style={styles.container}>
 
-            {/* Fixed Header */}
+            {}
             
 
-            {/* Scrollable Content */}
+            {}
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}

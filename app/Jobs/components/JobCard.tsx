@@ -18,7 +18,7 @@ export default function JobCard({
   job: JobProps;
   onPress?: () => void;
 }) {
-  // Set badge color based on job status
+  
   const badgeColor = job.status === 'accepted' ? '#9B5DE5' : '#F15BB5';
 
   return (
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 2, // For Android shadow
+    elevation: 2, 
   },
   title: {
     fontWeight: 'bold',

@@ -69,7 +69,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       };
       console.log("BookingModal - Fetched location:", coords);
       setLocation(coords);
-      setSelectedIndex(0); // default to current location
+      setSelectedIndex(0); 
     } catch (error) {
       console.error("BookingModal - Error fetching location:", error);
       setErrorMsg(
@@ -147,7 +147,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
         return;
       }
 
-      // Validate location data
+      
       if (
         typeof location.latitude !== "number" ||
         typeof location.longitude !== "number"
@@ -239,7 +239,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
         <View style={styles.modalContent}>
           <Text style={styles.addressHeader}>Tell us where to go!</Text>
           <View style={styles.addressContainer}>
-            {/* Current Location Option */}
+            {}
             <TouchableOpacity
               style={styles.radioItem}
               onPress={() => setSelectedIndex(0)}
@@ -259,7 +259,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
               </View>
             </TouchableOpacity>
 
-            {/* Custom Saved Addresses */}
+            {}
             {customAddresses.map((address, index) => (
               <TouchableOpacity
                 key={index}
@@ -282,7 +282,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
               </TouchableOpacity>
             ))}
 
-            {/* Add New Address Section */}
+            {}
             {showInput ? (
               <View style={{ marginTop: 10 }}>
                 <TextInput
@@ -316,7 +316,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
               </TouchableOpacity>
             )}
 
-            {/* Map Picker Modal */}
+            {}
             <Modal
               visible={showMap}
               animationType="slide"

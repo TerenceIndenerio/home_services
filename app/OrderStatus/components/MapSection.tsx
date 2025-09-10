@@ -21,7 +21,7 @@ const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionP
     console.log("MapSection - useEffect triggered with:", { providerId, bookingData, hasInitialized: hasInitialized.current });
     if (!providerId) return;
     
-    // Reset initialization if bookingData changes
+    
     if (bookingData && hasInitialized.current) {
       hasInitialized.current = false;
     }
@@ -42,7 +42,7 @@ const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionP
           const lat = bookingData.location.latitude;
           const lng = bookingData.location.longitude;
           
-          // Validate that latitude and longitude are valid numbers
+          
           if (typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)) {
             latitude = lat;
             longitude = lng;
@@ -62,7 +62,7 @@ const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionP
           const lat = coords.latitude;
           const lng = coords.longitude;
           
-          // Validate stored coordinates
+          
           if (typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)) {
             latitude = lat;
             longitude = lng;
@@ -73,7 +73,7 @@ const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionP
           }
         }
 
-        // Final validation
+        
         if (typeof latitude !== 'number' || typeof longitude !== 'number' || isNaN(latitude) || isNaN(longitude)) {
           console.error("MapSection - Final validation failed:", { latitude, longitude });
           throw new Error("Invalid coordinates for map");
@@ -81,7 +81,7 @@ const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionP
 
         console.log("MapSection - Creating map with coordinates:", { latitude, longitude });
 
-        // Map HTML
+        
         const html = `
           <!DOCTYPE html>
           <html>
@@ -123,7 +123,7 @@ const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionP
           </View>
         ) : (
           <>
-            {/* Floating Return Button */}
+            {}
             <TouchableOpacity style={styles.returnButton} onPress={() => router.back()}>
               <Ionicons name="exit" size={22} color="#fff" />
             </TouchableOpacity>

@@ -12,6 +12,10 @@ export default function JobTabBar({ activeTab, setActiveTab }: { activeTab: stri
         <Text style={[styles.tabText, activeTab === 'Accepted Jobs' && styles.activeTabText]}>Accepted Jobs</Text>
         {activeTab === 'Accepted Jobs' && <View style={styles.underline} />}
       </TouchableOpacity>
+      <TouchableOpacity style={styles.tab} onPress={() => setActiveTab('On Going Job')}>
+        <Text style={[styles.tabText, activeTab === 'On Going Job' && styles.activeTabText]}>On Going Job</Text>
+        {activeTab === 'On Going Job' && <View style={styles.underline} />}
+      </TouchableOpacity>
     </View>
   );
 }

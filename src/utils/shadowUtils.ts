@@ -1,4 +1,4 @@
-// Utility function to convert deprecated shadow props to boxShadow
+
 export const createBoxShadow = (
   shadowColor: string = '#000',
   shadowOffset: { width: number; height: number } = { width: 0, height: 0 },
@@ -11,7 +11,7 @@ export const createBoxShadow = (
   };
 };
 
-// Alternative for React Native - keep elevation for Android and use shadow props for iOS
+
 export const createShadow = (
   shadowColor: string = '#000',
   shadowOffset: { width: number; height: number } = { width: 0, height: 0 },

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, TextInput, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, TextInput, ScrollView, RefreshControl, StatusBar } from 'react-native';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 import { app } from '../../firebaseConfig';
 import { useLocalSearchParams } from 'expo-router';
@@ -109,7 +109,8 @@ const CategoryUsersScreen: React.FC = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#8C52FF" />
+        <Ionicons name="people" size={48} color={Colors.primary} style={{ marginBottom: 16 }} />
+        <ActivityIndicator size="large" color={Colors.primary} />
         <Text style={styles.loadingText}>Finding job seekers...</Text>
       </View>
     );
@@ -118,7 +119,7 @@ const CategoryUsersScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => router.replace('/')} style={styles.goBackButton}>
-        <Ionicons name="arrow-back" size={24} color="#333" />
+        <Ionicons name="arrow-back" size={24} color={Colors.text} />
       </TouchableOpacity>
       
       <View style={styles.headerWrapper}>
@@ -126,18 +127,18 @@ const CategoryUsersScreen: React.FC = () => {
       </View>
       
       <View style={styles.searchBarWrapper}>
-        <Ionicons name="search-outline" size={22} color="#8C52FF" style={{ marginLeft: 12, marginRight: 6 }} />
+        <Ionicons name="search-outline" size={22} color={Colors.primary} style={{ marginLeft: 12, marginRight: 6 }} />
         <TextInput
           style={styles.searchBar}
           placeholder="Search by name"
-          placeholderTextColor="#aaa"
+          placeholderTextColor={Colors.textSecondary}
           value={searchName}
           onChangeText={setSearchName}
           returnKeyType="search"
         />
         {searchName.length > 0 && (
           <TouchableOpacity onPress={() => setSearchName('')}>
-            <Ionicons name="close-circle" size={20} color="#aaa" style={{ marginRight: 12 }} />
+            <Ionicons name="close-circle" size={20} color={Colors.textSecondary} style={{ marginRight: 12 }} />
           </TouchableOpacity>
         )}
       </View>
@@ -150,8 +151,8 @@ const CategoryUsersScreen: React.FC = () => {
               style={[styles.filterChip, minRating === r && styles.filterChipActive]}
               onPress={() => setMinRating(minRating === r ? null : r)}
             >
-              <Ionicons name="star" size={16} color={minRating === r ? '#fff' : '#FFD700'} style={{ marginRight: 3 }} />
-              <Text style={[styles.filterChipText, minRating === r && { color: '#fff' }]}>Min {r}+</Text>
+              <Ionicons name="star" size={16} color={minRating === r ? Colors.background : Colors.secondary} style={{ marginRight: 3 }} />
+              <Text style={[styles.filterChipText, minRating === r && { color: Colors.background }]}>Min {r}+</Text>
             </TouchableOpacity>
           ))}
           {SORT_OPTIONS.map(opt => (
@@ -160,12 +161,12 @@ const CategoryUsersScreen: React.FC = () => {
               style={[styles.filterChip, sortBy === opt.key && styles.filterChipActive]}
               onPress={() => setSortBy(opt.key as any)}
             >
-              <Ionicons name={opt.icon as any} size={16} color={sortBy === opt.key ? '#fff' : '#8C52FF'} style={{ marginRight: 3 }} />
-              <Text style={[styles.filterChipText, sortBy === opt.key && { color: '#fff' }]}>{opt.label}</Text>
+              <Ionicons name={opt.icon as any} size={16} color={sortBy === opt.key ? Colors.background : Colors.primary} style={{ marginRight: 3 }} />
+              <Text style={[styles.filterChipText, sortBy === opt.key && { color: Colors.background }]}>{opt.label}</Text>
             </TouchableOpacity>
           ))}
           <TouchableOpacity style={styles.clearChip} onPress={handleClearFilters}>
-            <Ionicons name="close" size={16} color="#8C52FF" style={{ marginRight: 3 }} />
+            <Ionicons name="close" size={16} color={Colors.primary} style={{ marginRight: 3 }} />
             <Text style={styles.clearChipText}>Clear</Text>
           </TouchableOpacity>
         </View>
@@ -173,9 +174,9 @@ const CategoryUsersScreen: React.FC = () => {
       
       <FlatList
         data={getFilteredUsers()}
-        horizontal
+        numColumns={2}
         keyExtractor={(item) => item.id}
-        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.flatListContent}
         style={styles.flatList}
         renderItem={({ item }) => (
@@ -189,7 +190,13 @@ const CategoryUsersScreen: React.FC = () => {
             />
           </View>
         )}
-        ListEmptyComponent={<View style={styles.emptyStateWrapper}><Text style={styles.emptyText}>No job seekers found for this category.</Text></View>}
+        ListEmptyComponent={
+          <View style={styles.emptyStateWrapper}>
+            <Ionicons name="search" size={48} color={Colors.textSecondary} style={{ marginBottom: 16 }} />
+            <Text style={styles.emptyText}>No job seekers found for this category.</Text>
+            <Text style={[styles.emptyText, { fontSize: 14, marginTop: 8 }]}>Try adjusting your search or filters.</Text>
+          </View>
+        }
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -201,20 +208,20 @@ const CategoryUsersScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 48,
+    backgroundColor: Colors.background,
+    paddingTop: (StatusBar.currentHeight || 0) + 16,
     paddingHorizontal: 0,
   },
   goBackButton: {
     position: 'absolute',
-    top: 16,
+    top: (StatusBar.currentHeight || 0) + 16,
     left: 16,
     zIndex: 10,
     padding: 8,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background,
     borderRadius: 20,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: Colors.darkGray,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -227,20 +234,20 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: Colors.text,
     textAlign: 'center',
   },
   searchBarWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: Colors.lightGray,
     marginHorizontal: 20,
     borderRadius: 16,
     paddingVertical: 8,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#e9ecef',
-    shadowColor: '#000',
+    borderColor: Colors.border,
+    shadowColor: Colors.darkGray,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -249,7 +256,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
+    color: Colors.text,
     paddingVertical: 8,
   },
   filterChipBar: {
@@ -265,15 +272,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: Colors.lightGray,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e9ecef',
+    borderColor: Colors.border,
+    minWidth: 70,
+    height: 32,
+    justifyContent: 'center',
   },
   filterChipActive: {
-    backgroundColor: '#8C52FF',
-    borderColor: '#8C52FF',
-    shadowColor: '#8C52FF',
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -282,37 +292,37 @@ const styles = StyleSheet.create({
   filterChipText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#666',
+    color: Colors.textSecondary,
   },
   clearChip: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#8C52FF',
+    borderColor: Colors.primary,
+    minWidth: 70,
+    height: 32,
+    justifyContent: 'center',
   },
   clearChipText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#8C52FF',
+    color: Colors.primary,
   },
   flatList: {
     flex: 1,
   },
   flatListContent: {
     paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   cardWrapper: {
-    marginRight: 16,
-    width: 200,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    width: '48%',
+    margin: 8,
+    height: 220,
   },
   emptyStateWrapper: {
     flex: 1,
@@ -322,7 +332,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#666',
+    color: Colors.textSecondary,
     textAlign: 'center',
     fontWeight: '500',
   },
@@ -330,12 +340,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background,
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#666',
+    color: Colors.textSecondary,
     fontWeight: '500',
   },
 });

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AppState } from "react-native";
 import { auth } from "../../../../firebaseConfig";
 
 type AuthContextType = {
@@ -45,22 +46,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    let logoutTimeout: NodeJS.Timeout | null = null;
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
+
         
-        // Set session expiry to 1 hour from now
+        await AsyncStorage.setItem("hasSetup", "true");
+
+        
         const oneHour = 60 * 60 * 1000;
         const expiresAt = Date.now() + oneHour;
         await AsyncStorage.setItem("sessionExpiresAt", expiresAt.toString());
+
         
-        // Load or set user document ID
         try {
           const storedId = await AsyncStorage.getItem('user_document_id');
           if (storedId) {
             setUserDocumentIdState(storedId);
           } else {
-            // If no stored ID, use the Firebase UID and store it
+            
             await setUserDocumentId(firebaseUser.uid);
           }
         } catch (error) {
@@ -74,7 +80,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
     });
 
-    return unsubscribe;
+    
+    const handleAppStateChange = async (nextAppState: string) => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        
+        if (logoutTimeout) {
+          clearTimeout(logoutTimeout);
+        }
+
+        
+        logoutTimeout = setTimeout(async () => {
+          await AsyncStorage.removeItem("sessionExpiresAt");
+          await clearUserDocumentId();
+          setUser(null);
+        }, 60000); 
+      } else if (nextAppState === 'active') {
+        
+        if (logoutTimeout) {
+          clearTimeout(logoutTimeout);
+          logoutTimeout = null;
+        }
+      }
+    };
+
+    const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      unsubscribe();
+      appStateSubscription.remove();
+      if (logoutTimeout) {
+        clearTimeout(logoutTimeout);
+      }
+    };
   }, []);
 
   return (
@@ -90,5 +127,5 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// Default export to satisfy Expo Router
+
 export default AuthProvider;

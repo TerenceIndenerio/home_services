@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ScrollView, Alert, View, Text } from "react-native";
+import { ScrollView, Alert, View, Text, KeyboardAvoidingView, Platform } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import {
@@ -7,6 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { loginStyles } from "../../../styles/loginStyles";
 import LoginHeader from "../components/LoginHeader";
@@ -16,7 +17,6 @@ import { useRouter } from "expo-router";
 import { auth } from "../../../../firebaseConfig";
 import ErrorModal from "../components/ErrorModal";
 import { useAuth } from "../context/authContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -32,23 +32,8 @@ const Login: React.FC = () => {
     clientId: "<YOUR_GOOGLE_CLIENT_ID>.apps.googleusercontent.com",
   });
 
-  // Check hasSetup on mount
-  useEffect(() => {
-    const checkHasSetup = async () => {
-      try {
-        const value = await AsyncStorage.getItem("onBoard");
-        if (!value) {
-          router.replace("/authentication/OnBoardingScreen");
-        }
-      } catch (err) {
-        console.error("Error reading onBoard from AsyncStorage:", err);
-      }
-    };
 
-    checkHasSetup();
-  }, []);
-
-  // Handle Google login
+  
   useEffect(() => {
     if (response?.type === "success") {
       const { id_token } = response.params;
@@ -57,8 +42,10 @@ const Login: React.FC = () => {
       signInWithCredential(auth, credential)
         .then(async (userCredential) => {
           console.log("Google sign-in success:", userCredential.user);
-          // Save UID using auth context
+          
           await setUserDocumentId(userCredential.user.uid);
+          
+          await AsyncStorage.setItem("hasSetup", "true");
           router.replace("/");
         })
         .catch((error) => {
@@ -79,8 +66,11 @@ const Login: React.FC = () => {
       );
       const uid = userCredential.user.uid;
 
-      // Save UID using auth context
+      
       await setUserDocumentId(uid);
+
+      
+      await AsyncStorage.setItem("hasSetup", "true");
 
       console.log("Login successful:", uid);
       router.replace("/");
@@ -135,12 +125,29 @@ const Login: React.FC = () => {
   ];
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
-      <ScrollView contentContainerStyle={loginStyles.container} keyboardShouldPersistTaps="handled">
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#FAFAFA' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={[loginStyles.container, { flexGrow: 1, justifyContent: 'center' }]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <LoginHeader logoUrl="https://cdn.builder.io/api/v1/image/assets/a53206a1ac514d57bc5e1f4cc3ffd204/7e211eedc40e0ae6c463f082b4afa33b366aceb9?placeholderIfAbsent=true" />
-        <View style={{ alignItems: 'center', marginBottom: 8 }}>
-          <Text style={{ fontSize: 15, color: '#444', fontWeight: '400', fontFamily: 'Inter', textAlign: 'center', marginTop: 4, marginBottom: 8 }}>
-            Login to your account to continue
+        <View style={{ alignItems: 'center', marginBottom: 20 }}>
+          <Text style={{
+            fontSize: 18,
+            color: '#666',
+            fontWeight: '500',
+            fontFamily: 'Inter',
+            textAlign: 'center',
+            marginTop: 8,
+            marginBottom: 12,
+            lineHeight: 24
+          }}>
+            Welcome back! Please sign in to continue
           </Text>
         </View>
         <ErrorModal
@@ -153,7 +160,7 @@ const Login: React.FC = () => {
           onForgotPassword={handleForgotPassword}
         />
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

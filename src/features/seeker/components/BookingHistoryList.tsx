@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import BookingHistoryItem from "./BookingHistoryItem"; // this is your existing file
+import BookingHistoryItem from "./BookingHistoryItem"; 
 
 interface BookingHistory {
   id: string;
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   scrollContainer: {
-    maxHeight: 300, // Adjust this value as needed
+    maxHeight: 300, 
   },
 });
 

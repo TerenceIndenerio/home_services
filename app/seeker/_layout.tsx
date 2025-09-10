@@ -28,21 +28,21 @@ function TabBarIcon(props: {
 
 export default function SeekerTabLayout() {
   const colorScheme = useColorScheme();
-  // Example: set to true to show notification dot
+  
   const hasUnreadMessages = true;
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#8C52FF', // active icon and label color
-        tabBarInactiveTintColor: '#888', // subtle gray for inactive
+        tabBarActiveTintColor: '#8C52FF', 
+        tabBarInactiveTintColor: '#888', 
         headerShown: false,
         tabBarStyle: {
           backgroundColor: '#ffffff',
           borderTopWidth: 0,
           elevation: 0,
         },
-        tabBarActiveBackgroundColor: '#f3edff', // subtle light purple background for active tab
+        tabBarActiveBackgroundColor: '#f3edff', 
         tabBarInactiveBackgroundColor: '#ffffff',
       }}
     >

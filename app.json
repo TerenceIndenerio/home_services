@@ -1,5 +1,6 @@
 {
   "expo": {
+    "name": "Home Services",
     "android": {
       "package": "com.terenceindenerio.reactnativeapp",
       "permissions": [
@@ -40,6 +41,7 @@
     },
     "owner": "terence_indenerio",
     "slug": "react_native",
+    "scheme": "reactnative",
     "jsEngine": "jsc"
   }
 }

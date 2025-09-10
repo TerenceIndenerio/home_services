@@ -9,18 +9,18 @@ export const useUserDocumentId = () => {
   useEffect(() => {
     const loadUserDocumentId = async () => {
       try {
-        // First try to get from AsyncStorage
+        
         const storedId = await AsyncStorage.getItem('user_document_id');
         
         if (storedId) {
           setUserDocumentId(storedId);
         } else {
-          // Fallback to Firebase Auth UID
+          
           const auth = getAuth();
           const currentUser = auth.currentUser;
           if (currentUser) {
             setUserDocumentId(currentUser.uid);
-            // Store it for future use
+            
             await AsyncStorage.setItem('user_document_id', currentUser.uid);
           }
         }

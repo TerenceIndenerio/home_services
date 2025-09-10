@@ -8,7 +8,7 @@ export default function SoonPage() {
   const router = useRouter();
 
   const handleGoBack = () => {
-    // Try to go back, if no previous screen exists, navigate to main tabs
+    
     if (router.canGoBack()) {
       router.back();
     } else {
@@ -18,7 +18,7 @@ export default function SoonPage() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header with back button */}
+      {}
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton} 
@@ -29,7 +29,7 @@ export default function SoonPage() {
         </TouchableOpacity>
       </View>
 
-      {/* Main content */}
+      {}
       <View style={styles.content}>
         <View style={styles.iconContainer}>
           <Ionicons name="construct" size={80} color={Colors.light.tint} />

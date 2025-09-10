@@ -56,8 +56,8 @@ export default function SeekerMessagesScreen() {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    // Add any data fetching logic here
-    // For example, refetch messages
+    
+    
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);

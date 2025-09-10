@@ -67,8 +67,8 @@ export default function Bookings() {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    // Add any data fetching logic here
-    // For example, refetch bookings data
+    
+    
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
@@ -78,9 +78,9 @@ export default function Bookings() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => {
-          // Try to go back, but if not possible, go to home
+          
           try {
-            // @ts-ignore: canGoBack may not exist in expo-router, fallback to push
+            
             if (router.canGoBack && router.canGoBack()) {
               router.back();
             } else {

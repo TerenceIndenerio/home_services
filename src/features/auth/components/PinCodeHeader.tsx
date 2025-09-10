@@ -16,7 +16,7 @@ export const LoginHeader: React.FC<LoginHeaderProps> = () => {
   );
 };
 
-// Default export to satisfy Expo Router
+
 export default LoginHeader;
 
 const styles = StyleSheet.create({

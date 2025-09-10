@@ -43,13 +43,13 @@ const CategorySection: React.FC = () => {
 
   return (
     <View>
-      {/* Section Header */}
+      {}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Categories</Text>
         <Text style={styles.viewAllText}>View All</Text>
       </View>
 
-      {/* Categories List */}
+      {}
       <FlatList
         data={categories}
         renderItem={({ item }) => (

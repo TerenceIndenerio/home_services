@@ -14,7 +14,7 @@ export default function JobDetails() {
 
   console.log('JobDetails - received job:', job);
 
-  const handleStatusUpdate = async (status: "accepted" | "declined") => {
+  const handleStatusUpdate = async (status: "accepted" | "declined" | "started" | "ongoing" | "done") => {
     if (!job?.id) return;
 
     try {
@@ -22,10 +22,10 @@ export default function JobDetails() {
       const ref = doc(db, "bookings", job.id);
       await updateDoc(ref, { status });
 
-      // Update local state
+
       setJobDetails((prev: any) => prev ? { ...prev, status } : null);
 
-      // Show success message and navigate back
+
       alert(`Job ${status} successfully!`);
       router.back();
     } catch (err) {
@@ -45,20 +45,20 @@ export default function JobDetails() {
     const fetchJobDetails = async () => {
       try {
         setLoading(true);
-        console.log('Job data received:', job); // Debug log
+        console.log('Job data received:', job); 
 
-        // Fetch job details from 'bookings' collection
+        
         const jobDoc = await getDoc(doc(db, 'bookings', job.id));
         if (jobDoc.exists()) {
           const data = jobDoc.data();
-          console.log('Firebase data:', data); // Debug log
+          console.log('Firebase data:', data); 
 
           setJobDetails({
             ...job,
             ...data,
-            // Map bookings fields to job details fields
+            
             title: data.jobTitle || job.title || 'Untitled Job',
-            name: data.providerName || 'Service Provider', // Provider name might not be in data
+            name: data.providerName || 'Service Provider', 
             rate: `₱${data.amount || job.amount || 0}`,
             tags: data.tags || [],
             postedDate: data.createdAt?.seconds
@@ -69,7 +69,7 @@ export default function JobDetails() {
             qualifications: data.qualifications || [],
             location: data.address || job.address || 'No address',
             status: data.status || job.status || 'pending',
-            // Additional fields from the data
+            
             providerId: data.providerId || 'N/A',
             userId: data.userId || 'N/A',
             address: data.address || 'N/A',
@@ -97,7 +97,7 @@ export default function JobDetails() {
     if (job && job.id) {
       fetchJobDetails();
     } else {
-      console.log('Invalid job data:', job); // Debug log
+      console.log('Invalid job data:', job); 
       setError('Invalid job data - missing ID');
       setLoading(false);
     }
@@ -204,26 +204,53 @@ export default function JobDetails() {
         </View>
       </ScrollView>
       <View style={styles.buttonRow}>
-       
-        <Pressable
-          style={styles.applyButton}
-          onPress={() => handleStatusUpdate("accepted")}
-          disabled={updatingStatus}
-        >
-          <Text style={styles.applyButtonText}>
-            {updatingStatus ? "Updating..." : "Accept Job"}
-          </Text>
-        </Pressable>
+        {jobDetails.status === 'accepted' ? (
+          <Pressable
+            style={styles.startButton}
+            onPress={() => handleStatusUpdate("ongoing")}
+            disabled={updatingStatus}
+          >
+            <Text style={styles.startButtonText}>
+              {updatingStatus ? "Updating..." : "Start Job"}
+            </Text>
+          </Pressable>
+        ) : jobDetails.status === 'ongoing' ? (
+          <Pressable
+            style={styles.finishButton}
+            onPress={() => handleStatusUpdate("done")}
+            disabled={updatingStatus}
+          >
+            <Text style={styles.finishButtonText}>
+              {updatingStatus ? "Updating..." : "Finish Job"}
+            </Text>
+          </Pressable>
+        ) : jobDetails.status === 'done' ? (
+          <View style={styles.completedContainer}>
+            <Text style={styles.completedText}>Job Completed</Text>
+          </View>
+        ) : (
+          <>
+            <Pressable
+              style={styles.applyButton}
+              onPress={() => handleStatusUpdate("accepted")}
+              disabled={updatingStatus}
+            >
+              <Text style={styles.applyButtonText}>
+                {updatingStatus ? "Updating..." : "Accept Job"}
+              </Text>
+            </Pressable>
 
-         <Pressable
-          style={styles.declineButton}
-          onPress={() => handleStatusUpdate("declined")}
-          disabled={updatingStatus}
-        >
-          <Text style={styles.declineButtonText}>
-            {updatingStatus ? "Updating..." : "Decline"}
-          </Text>
-        </Pressable>
+            <Pressable
+              style={styles.declineButton}
+              onPress={() => handleStatusUpdate("declined")}
+              disabled={updatingStatus}
+            >
+              <Text style={styles.declineButtonText}>
+                {updatingStatus ? "Updating..." : "Decline"}
+              </Text>
+            </Pressable>
+          </>
+        )}
       </View>
     </View>
   );
@@ -268,6 +295,12 @@ const styles = StyleSheet.create({
   bookmarkButtonText: { color: '#9B5DE5', fontWeight: 'bold', fontSize: 16 },
   declineButton: { borderWidth: 1, borderColor: '#ff4444', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 32 },
   declineButtonText: { color: '#ff4444', fontWeight: 'bold', fontSize: 16 },
+  startButton: { backgroundColor: '#28a745', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 32 },
+  startButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  finishButton: { backgroundColor: '#007bff', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 32 },
+  finishButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  completedContainer: { alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
+  completedText: { color: '#28a745', fontWeight: 'bold', fontSize: 16 },
   detailSection: { marginBottom: 8 },
   label: { fontSize: 14, fontWeight: '600', color: '#666' },
   value: { fontSize: 16, fontWeight: '400', color: '#333' },

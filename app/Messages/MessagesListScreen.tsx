@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
 
-// Message item type for type safety and future extensibility
+
 export type MessageItem = {
     id: string;
     name: string;
     message: string;
     time: string;
-    avatar: any; // Use ImageSourcePropType if you want stricter typing
+    avatar: any; 
     onPress?: () => void;
 };
 

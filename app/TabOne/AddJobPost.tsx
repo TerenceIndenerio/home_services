@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { useAuth } from '@/src/features/auth/context/authContext';
+import Loader from '@/src/components/Loader';
 
 const employmentTypes = [
   'Full Time',
@@ -15,11 +16,13 @@ const employmentTypes = [
 
 const AddJobPost: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [jobTitle, setJobTitle] = useState('');
   const [description, setDescription] = useState('');
   const [pay, setPay] = useState('');
   const [skillInput, setSkillInput] = useState('');
-  const [skills, setSkills] = useState<string[]>(['Emailing', 'Scheduling', 'Communication Skills']);
+  const [skills, setSkills] = useState<string[]>([]);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { user } = useAuth();
 
@@ -40,118 +43,149 @@ const AddJobPost: React.FC = () => {
       return;
     }
 
-    if (!selectedType || !description || !pay) {
+    if (!selectedType || !jobTitle || !description || !pay || skills.length === 0) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
 
+    setLoading(true);
     try {
       await addDoc(collection(db, 'jobs'), {
         jobType: selectedType,
+        jobTitle,
         description,
         pay: parseFloat(pay),
-        skills,
+        skills: skills, // Store as JSON array
         uid: user.uid,
-        location: 'Placeholder Location', // TODO: Implement location functionality
+        location: 'Placeholder Location',
         status: 'open',
         createdAt: new Date(),
       });
-      Alert.alert('Success', 'Job posted successfully!');
-      router.back();
+      Alert.alert(
+        'Success!',
+        'Your job post has been created successfully.',
+        [
+          {
+            text: 'OK',
+            onPress: () => router.back()
+          }
+        ]
+      );
     } catch (error) {
       console.error('Error posting job:', error);
-      Alert.alert('Error', 'There was an error posting the job. Please try again.');
+      Alert.alert(
+        'Failed to Post Job',
+        'There was an error posting your job. Please check your connection and try again.',
+        [
+          { text: 'Try Again' },
+          { text: 'Cancel', style: 'cancel' }
+        ]
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <Text style={styles.label}>What type of Employment?</Text>
-      <TouchableOpacity style={styles.dropdown} onPress={() => setDropdownOpen(!isDropdownOpen)}>
-        <Text style={{ color: selectedType ? '#222' : '#aaa' }}>
-          {selectedType || 'Type of Employment'}
-        </Text>
-        <Ionicons name={isDropdownOpen ? 'chevron-up' : 'chevron-down'} size={20} color="#8F5CFF" />
-      </TouchableOpacity>
-      {isDropdownOpen && (
-        <View style={styles.dropdownMenu}>
-          {employmentTypes.map(type => (
+    <>
+      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <Text style={styles.label}>What type of Employment?</Text>
+        <TouchableOpacity style={styles.dropdown} onPress={() => setDropdownOpen(!isDropdownOpen)}>
+          <Text style={{ color: selectedType ? '#222' : '#aaa' }}>
+            {selectedType || 'Type of Employment'}
+          </Text>
+          <Ionicons name={isDropdownOpen ? 'chevron-up' : 'chevron-down'} size={20} color="#8F5CFF" />
+        </TouchableOpacity>
+        {isDropdownOpen && (
+          <View style={styles.dropdownMenu}>
+            {employmentTypes.map(type => (
+              <TouchableOpacity
+                key={type}
+                style={styles.dropdownItem}
+                onPress={() => {
+                  setSelectedType(type);
+                  setDropdownOpen(false);
+                }}
+              >
+                <Text>{type}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        <Text style={[styles.label, { marginTop: 32 }]}>Job Title</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter job title"
+          value={jobTitle}
+          onChangeText={setJobTitle}
+        />
+
+        <Text style={[styles.label, { marginTop: 32 }]}>Job Description</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter job description"
+          value={description}
+          onChangeText={setDescription}
+          multiline
+        />
+
+        <Text style={[styles.label, { marginTop: 32 }]}>Offered Pay</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter amount"
+          value={pay}
+          onChangeText={setPay}
+          keyboardType="numeric"
+        />
+
+        <Text style={[styles.label, { marginTop: 32 }]}>What skills are you looking for?</Text>
+        <View style={styles.skillInputRow}>
+          <TextInput
+            style={[styles.skillInput, { flex: 1, marginRight: 8 }]}
+            placeholder="Enter skill"
+            value={skillInput}
+            onChangeText={setSkillInput}
+          />
+          <TouchableOpacity style={styles.addSkillBtn} onPress={handleAddSkill}>
+            <Text style={styles.addSkillText}>Add</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.skillsRow}>
+          {skills.map(skill => (
             <TouchableOpacity
-              key={type}
-              style={styles.dropdownItem}
-              onPress={() => {
-                setSelectedType(type);
-                setDropdownOpen(false);
-              }}
+              key={skill}
+              style={styles.skillChip}
+              onPress={() => handleRemoveSkill(skill)}
             >
-              <Text>{type}</Text>
+              <Text style={styles.skillChipText}>{skill}</Text>
             </TouchableOpacity>
           ))}
         </View>
-      )}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.cancelBtn} onPress={() => {
 
-      <Text style={[styles.label, { marginTop: 32 }]}>Job Description</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter job description"
-        value={description}
-        onChangeText={setDescription}
-        multiline
-      />
+            try {
 
-      <Text style={[styles.label, { marginTop: 32 }]}>Offered Pay</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter amount"
-        value={pay}
-        onChangeText={setPay}
-        keyboardType="numeric"
-      />
-
-      <Text style={[styles.label, { marginTop: 32 }]}>What skills are you looking for?</Text>
-      <View style={styles.skillInputRow}>
-        <Ionicons name="search" size={20} color="#8F5CFF" style={{ marginRight: 8 }} />
-        <TextInput
-          style={styles.skillInput}
-          placeholder="Add Skills"
-          value={skillInput}
-          onChangeText={setSkillInput}
-          onSubmitEditing={handleAddSkill}
-          returnKeyType="done"
-        />
-      </View>
-      <View style={styles.skillsRow}>
-        {skills.map(skill => (
-          <TouchableOpacity
-            key={skill}
-            style={styles.skillChip}
-            onLongPress={() => handleRemoveSkill(skill)}
-          >
-            <Text style={styles.skillChipText}>{skill}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.cancelBtn} onPress={() => {
-          // Try to go back, but if not possible, go to home
-          try {
-            // @ts-ignore: canGoBack may not exist in expo-router, fallback to push
-            if (router.canGoBack && router.canGoBack()) {
-              router.back();
-            } else {
+              if (router.canGoBack && router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace ? router.replace("/") : router.push("/");
+              }
+            } catch {
               router.replace ? router.replace("/") : router.push("/");
             }
-          } catch {
-            router.replace ? router.replace("/") : router.push("/");
-          }
-        }}>
-          <Text style={styles.cancelText}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.nextBtn} onPress={handlePostJob}>
-          <Text style={styles.nextText}>Post Job</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+          }}>
+            <Text style={styles.cancelText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.nextBtn} onPress={handlePostJob}>
+            <Text style={styles.nextText}>Post Job</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+      <Loader visible={loading} text="Posting job..." />
+    </>
   );
 };
 
@@ -216,6 +250,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#222',
   },
+  addSkillBtn: {
+    backgroundColor: '#A259FF',
+    borderRadius: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  addSkillText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   skillsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -266,6 +312,31 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  toggleBtn: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#E5DFFF',
+    borderRadius: 6,
+    paddingVertical: 10,
+    alignItems: 'center',
+    backgroundColor: '#FAF8FF',
+  },
+  toggleBtnActive: {
+    backgroundColor: '#A259FF',
+    borderColor: '#A259FF',
+  },
+  toggleText: {
+    color: '#8F5CFF',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  toggleTextActive: {
+    color: '#fff',
   },
 });
 

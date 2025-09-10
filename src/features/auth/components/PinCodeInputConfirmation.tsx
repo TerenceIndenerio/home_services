@@ -21,7 +21,7 @@ export default function PinSetupScreen() {
   const inputsConfirm = useRef<(TextInput | null)[]>([]);
 
   useEffect(() => {
-    // Auto-focus the first input on initial mount
+    
     setTimeout(() => {
       inputs.current[0]?.focus();
     }, 100);

@@ -14,6 +14,7 @@ import { db } from "../../../../firebaseConfig";
 import BookingRequestItem from "./BookingRequestItem";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import Loader from "../../../components/Loader";
 
 interface BookingRequest {
   id: string;
@@ -21,8 +22,8 @@ interface BookingRequest {
   job: string;
   customer: string;
   location?: { latitude: number; longitude: number };
-  latitude?: number; // Add direct latitude property
-  longitude?: number; // Add direct longitude property
+  latitude?: number; 
+  longitude?: number; 
   address?: string;
   amount?: number;
   createdAt?: any;
@@ -40,8 +41,8 @@ interface BookingRequest {
 interface BookingRequestsListProps {
   requests: BookingRequest[];
   style?: ViewStyle;
-  onStatusChange?: () => void; // ✅ Added
-  maxHeight?: number; // Make max height configurable
+  onStatusChange?: () => void; 
+  maxHeight?: number; 
 }
 
 const formatTimestamp = (timestamp: Timestamp | undefined) => {
@@ -53,11 +54,12 @@ const BookingRequestsList: React.FC<BookingRequestsListProps> = ({
   requests,
   style,
   onStatusChange,
-  maxHeight = 400, // Default max height
+  maxHeight = 400,
 }) => {
   const [selectedRequest, setSelectedRequest] = useState<BookingRequest | null>(
     null
   );
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   console.log(selectedRequest)
@@ -69,190 +71,196 @@ const BookingRequestsList: React.FC<BookingRequestsListProps> = ({
     id: string,
     status: "accepted" | "declined"
   ) => {
+    setLoading(true);
     try {
       const ref = doc(db, "bookings", id);
       await updateDoc(ref, { status });
 
       setSelectedRequest(null);
-      onStatusChange?.(); // ✅ Ask parent to refresh
+      onStatusChange?.();
     } catch (err) {
       console.error("Failed to update status:", err);
-      throw err; // Re-throw the error so the BookingRequestItem can handle it
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <View style={[styles.container, style]}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Booking Requests</Text>
-        <Text style={styles.count}>{requests.length} new</Text>
-      </View>
-
-      <ScrollView 
-        style={[styles.scrollContainer, { maxHeight }]}
-        showsVerticalScrollIndicator={true}
-        nestedScrollEnabled={true}
-      >
-        {requests.map((request) => (
-          <TouchableOpacity key={request.id} onPress={() => openModal(request)}>
-            <BookingRequestItem
-              request={request}
-              onAccept={() => handleStatusUpdate(request.id, "accepted")}
-              onDecline={() => handleStatusUpdate(request.id, "declined")}
-              onRefresh={onStatusChange}
-            />
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      <Modal visible={!!selectedRequest} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.modalTitle}>📋 Booking Summary</Text>
-
-              {selectedRequest && (
-                <>
-                  <Image
-                    source={{ uri: selectedRequest.avatar }}
-                    style={styles.avatar}
-                  />
-
-                  <Section title="👤 Provider Info">
-                    <Detail
-                      label="Name"
-                      value={selectedRequest.customer || "N/A"}
-                    />
-                    
-                  </Section>
-
-                  <Section title="🛠 Job Details">
-                    <Detail
-                      label="Job Title"
-                      value={selectedRequest.jobTitle || "N/A"}
-                    />
-                    <Detail
-                      label="Description"
-                      value={selectedRequest.description || "N/A"}
-                    />
-                    <Detail
-                      label="Amount"
-                      value={
-                        selectedRequest.amount
-                          ? `₱${selectedRequest.amount}`
-                          : "N/A"
-                      }
-                    />
-                   
-                  </Section>
-
-                  <Section title="📍 Location">
-                    <Detail
-                      label="Address"
-                      value={selectedRequest.address || "N/A"}
-                    />
-                    <Detail
-                      label="Latitude"
-                      value={selectedRequest.location?.latitude?.toString() ?? selectedRequest.latitude?.toString() ?? "N/A"}
-                    />
-                    <Detail
-                      label="Longitude"
-                      value={selectedRequest.location?.longitude?.toString() ?? selectedRequest.longitude?.toString() ?? "N/A"}
-                    />
-                  </Section>
-
-                  <Section title="⏰ Timing">
-                    <Detail
-                      label="Schedule Date"
-                      value={formatTimestamp(selectedRequest.scheduleDate)}
-                    />
-                    <Detail
-                      label="Created At"
-                      value={formatTimestamp(selectedRequest.createdAt)}
-                    />
-                    
-                  </Section>
-
-                  <Section title="📌 Status">
-                    <Detail
-                      label="Current Status"
-                      value={
-                        selectedRequest.status === "accepted"
-                          ? "✅ Accepted"
-                          : selectedRequest.status === "declined"
-                            ? "❌ Declined"
-                            : "🕐 Pending"
-                      }
-                    />
-                  </Section>
-
-                  {selectedRequest.status === "pending" && (
-                    <View
-                      style={{ flexDirection: "row", marginTop: 20, gap: 10 }}
-                    >
-                      <TouchableOpacity
-                        style={[
-                          styles.closeButton,
-                          { backgroundColor: "#F5F5F5" },
-                        ]}
-                        onPress={() =>
-                          handleStatusUpdate(selectedRequest.id, "declined")
-                        }
-                      >
-                        <Text style={{ color: "#444", fontWeight: "600" }}>
-                          Decline
-                        </Text>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        style={[
-                          styles.closeButton,
-                          { backgroundColor: "#8B5CF6" },
-                        ]}
-                        onPress={() =>
-                          handleStatusUpdate(selectedRequest.id, "accepted")
-                        }
-                      >
-                        <Text style={{ color: "#fff", fontWeight: "600" }}>
-                          Accept
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  )}
-
-                  {/* View Map Button */}
-                  {selectedRequest && (selectedRequest.location?.latitude || selectedRequest.latitude) && (
-                    <TouchableOpacity
-                      style={styles.viewMapButton}
-                      onPress={() => {
-                        const latitude = selectedRequest.location?.latitude || selectedRequest.latitude;
-                        const longitude = selectedRequest.location?.longitude || selectedRequest.longitude;
-                        const address = selectedRequest.address || "Location";
-                        const jobTitle = selectedRequest.jobTitle || "Job Location";
-                        const description = selectedRequest.description || "";
-                        
-                        closeModal(); // Close the modal first
-                        router.push(`/Jobs/booking/map?latitude=${latitude}&longitude=${longitude}&address=${encodeURIComponent(address)}&jobTitle=${encodeURIComponent(jobTitle)}&description=${encodeURIComponent(description)}`);
-                      }}
-                    >
-                      <Ionicons name="map" size={20} color="#fff" />
-                      <Text style={styles.viewMapButtonText}>View Map</Text>
-                    </TouchableOpacity>
-                  )}
-
-                  <TouchableOpacity
-                    onPress={closeModal}
-                    style={[styles.closeButton, { marginTop: 12 }]}
-                  >
-                    <Text style={styles.closeText}>Close</Text>
-                  </TouchableOpacity>
-                </>
-              )}
-            </ScrollView>
-          </View>
+    <>
+      <View style={[styles.container, style]}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Booking Requests</Text>
+          <Text style={styles.count}>{requests.length} new</Text>
         </View>
-      </Modal>
-    </View>
+
+        <ScrollView
+          style={[styles.scrollContainer, { maxHeight }]}
+          showsVerticalScrollIndicator={true}
+          nestedScrollEnabled={true}
+        >
+          {requests.map((request) => (
+            <TouchableOpacity key={request.id} onPress={() => openModal(request)}>
+              <BookingRequestItem
+                request={request}
+                onAccept={() => handleStatusUpdate(request.id, "accepted")}
+                onDecline={() => handleStatusUpdate(request.id, "declined")}
+                onRefresh={onStatusChange}
+              />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        <Modal visible={!!selectedRequest} animationType="slide" transparent>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <ScrollView showsVerticalScrollIndicator={false}>
+                <Text style={styles.modalTitle}>📋 Booking Summary</Text>
+
+                {selectedRequest && (
+                  <>
+                    <Image
+                      source={{ uri: selectedRequest.avatar }}
+                      style={styles.avatar}
+                    />
+
+                    <Section title="👤 Provider Info">
+                      <Detail
+                        label="Name"
+                        value={selectedRequest.customer || "N/A"}
+                      />
+
+                    </Section>
+
+                    <Section title="🛠 Job Details">
+                      <Detail
+                        label="Job Title"
+                        value={selectedRequest.jobTitle || "N/A"}
+                      />
+                      <Detail
+                        label="Description"
+                        value={selectedRequest.description || "N/A"}
+                      />
+                      <Detail
+                        label="Amount"
+                        value={
+                          selectedRequest.amount
+                            ? `₱${selectedRequest.amount}`
+                            : "N/A"
+                        }
+                      />
+
+                    </Section>
+
+                    <Section title="📍 Location">
+                      <Detail
+                        label="Address"
+                        value={selectedRequest.address || "N/A"}
+                      />
+                      <Detail
+                        label="Latitude"
+                        value={selectedRequest.location?.latitude?.toString() ?? selectedRequest.latitude?.toString() ?? "N/A"}
+                      />
+                      <Detail
+                        label="Longitude"
+                        value={selectedRequest.location?.longitude?.toString() ?? selectedRequest.longitude?.toString() ?? "N/A"}
+                      />
+                    </Section>
+
+                    <Section title="⏰ Timing">
+                      <Detail
+                        label="Schedule Date"
+                        value={formatTimestamp(selectedRequest.scheduleDate)}
+                      />
+                      <Detail
+                        label="Created At"
+                        value={formatTimestamp(selectedRequest.createdAt)}
+                      />
+
+                    </Section>
+
+                    <Section title="📌 Status">
+                      <Detail
+                        label="Current Status"
+                        value={
+                          selectedRequest.status === "accepted"
+                            ? "✅ Accepted"
+                            : selectedRequest.status === "declined"
+                              ? "❌ Declined"
+                              : "🕐 Pending"
+                        }
+                      />
+                    </Section>
+
+                    {selectedRequest.status === "pending" && (
+                      <View
+                        style={{ flexDirection: "row", marginTop: 20, gap: 10 }}
+                      >
+                        <TouchableOpacity
+                          style={[
+                            styles.closeButton,
+                            { backgroundColor: "#F5F5F5" },
+                          ]}
+                          onPress={() =>
+                            handleStatusUpdate(selectedRequest.id, "declined")
+                          }
+                        >
+                          <Text style={{ color: "#444", fontWeight: "600" }}>
+                            Decline
+                          </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={[
+                            styles.closeButton,
+                            { backgroundColor: "#8B5CF6" },
+                          ]}
+                          onPress={() =>
+                            handleStatusUpdate(selectedRequest.id, "accepted")
+                          }
+                        >
+                          <Text style={{ color: "#fff", fontWeight: "600" }}>
+                            Accept
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+
+                    {}
+                    {selectedRequest && (selectedRequest.location?.latitude || selectedRequest.latitude) && (
+                      <TouchableOpacity
+                        style={styles.viewMapButton}
+                        onPress={() => {
+                          const latitude = selectedRequest.location?.latitude || selectedRequest.latitude;
+                          const longitude = selectedRequest.location?.longitude || selectedRequest.longitude;
+                          const address = selectedRequest.address || "Location";
+                          const jobTitle = selectedRequest.jobTitle || "Job Location";
+                          const description = selectedRequest.description || "";
+
+                          closeModal(); // Close the modal first
+                          router.push(`/Jobs/booking/map?latitude=${latitude}&longitude=${longitude}&address=${encodeURIComponent(address)}&jobTitle=${encodeURIComponent(jobTitle)}&description=${encodeURIComponent(description)}`);
+                        }}
+                      >
+                        <Ionicons name="map" size={20} color="#fff" />
+                        <Text style={styles.viewMapButtonText}>View Map</Text>
+                      </TouchableOpacity>
+                    )}
+
+                    <TouchableOpacity
+                      onPress={closeModal}
+                      style={[styles.closeButton, { marginTop: 12 }]}
+                    >
+                      <Text style={styles.closeText}>Close</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+      </View>
+      <Loader visible={loading} text="Updating status..." />
+    </>
   );
 };
 
@@ -281,7 +289,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   scrollContainer: {
-    paddingBottom: 8, // Add some bottom padding for better scrolling
+    paddingBottom: 8, 
   },
   header: {
     flexDirection: "row",

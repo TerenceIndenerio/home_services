@@ -7,9 +7,11 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Image,
+  TextInput,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -19,6 +21,9 @@ const BookingDetails = () => {
   const [booking, setBooking] = useState<any>(null);
   const [provider, setProvider] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [rating, setRating] = useState<string>("");
+  const [review, setReview] = useState<string>("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -65,18 +70,61 @@ const BookingDetails = () => {
     return new Date(timestamp.seconds * 1000).toLocaleString();
   };
 
+  const handleSubmitRating = async () => {
+    if (!rating.trim()) {
+      Alert.alert("Error", "Please enter a rating between 1-5");
+      return;
+    }
+
+    const ratingNum = parseInt(rating);
+    if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+      Alert.alert("Error", "Rating must be a number between 1 and 5");
+      return;
+    }
+
+    if (!review.trim()) {
+      Alert.alert("Error", "Please enter a review");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const bookingRef = doc(db, "bookings", id as string);
+      await updateDoc(bookingRef, {
+        rating: ratingNum,
+        review: review.trim(),
+      });
+
+      // Update local state
+      setBooking((prev: any) => ({
+        ...prev,
+        rating: ratingNum,
+        review: review.trim(),
+      }));
+
+      Alert.alert("Success", "Rating and review submitted successfully!");
+      setRating("");
+      setReview("");
+    } catch (error) {
+      console.error("Error updating rating:", error);
+      Alert.alert("Error", "Failed to submit rating. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading)
     return <ActivityIndicator style={{ marginTop: 20 }} size="large" />;
   if (!booking) return <Text style={styles.errorText}>Booking not found</Text>;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header */}
+      {}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => {
-          // Try to go back, but if not possible, go to home
+          
           try {
-            // @ts-ignore: canGoBack may not exist in expo-router, fallback to push
+            
             if (router.canGoBack && router.canGoBack()) {
               router.back();
             } else {
@@ -92,7 +140,7 @@ const BookingDetails = () => {
         <View style={{ width: 24 }} />
       </View>
 
-      {/* Provider Info */}
+      {}
       {provider && (
         <View style={styles.profileCard}>
           <Image
@@ -133,6 +181,34 @@ const BookingDetails = () => {
         <Text style={styles.value}>{formatDate(booking.scheduleDate)}</Text>
       </View>
 
+      {/* Location Details */}
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Location Details</Text>
+        <Text style={styles.label}>Address</Text>
+        <Text style={styles.value}>{booking.address}</Text>
+
+        <Text style={styles.label}>Coordinates</Text>
+        <Text style={styles.value}>{booking.location?.latitude || booking.latitude || 'N/A'}, {booking.location?.longitude || booking.longitude || 'N/A'}</Text>
+
+        {(booking.location?.latitude || booking.latitude) && (booking.location?.longitude || booking.longitude) && (
+          <TouchableOpacity
+            style={styles.viewMapButton}
+            onPress={() => {
+              const latitude = booking.location?.latitude || booking.latitude;
+              const longitude = booking.location?.longitude || booking.longitude;
+              const address = booking.address || "Job Location";
+              const jobTitle = booking.jobTitle || "Job Location";
+              const description = booking.description || "";
+
+              router.push(`/Jobs/booking/map?latitude=${latitude}&longitude=${longitude}&address=${encodeURIComponent(address)}&jobTitle=${encodeURIComponent(jobTitle)}&description=${encodeURIComponent(description)}`);
+            }}
+          >
+            <Ionicons name="map" size={20} color="#fff" />
+            <Text style={styles.viewMapButtonText}>View Map</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
       {/* Payment Info */}
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Payment Details</Text>
@@ -143,7 +219,7 @@ const BookingDetails = () => {
         <Text style={styles.value}>{booking.isPaid ? "Yes" : "No"}</Text>
       </View>
 
-      {/* Status Info */}
+      {}
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Status & Feedback</Text>
         <View style={styles.badgeWrapper}>
@@ -156,6 +232,40 @@ const BookingDetails = () => {
           <Text style={styles.pendingMessage}>
             Waiting for the Job Seeker to accept the job offer
           </Text>
+        ) : booking.status === "done" && !booking.rating ? (
+          <>
+            <Text style={styles.sectionTitle}>Rate & Review</Text>
+            <Text style={styles.label}>Rating (1-5)</Text>
+            <TextInput
+              style={styles.input}
+              value={rating}
+              onChangeText={setRating}
+              placeholder="Enter rating (1-5)"
+              keyboardType="numeric"
+              maxLength={1}
+            />
+
+            <Text style={styles.label}>Review</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={review}
+              onChangeText={setReview}
+              placeholder="Write your review here..."
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+
+            <TouchableOpacity
+              style={[styles.submitButton, submitting && styles.submitButtonDisabled]}
+              onPress={handleSubmitRating}
+              disabled={submitting}
+            >
+              <Text style={styles.submitButtonText}>
+                {submitting ? "Submitting..." : "Submit Rating & Review"}
+              </Text>
+            </TouchableOpacity>
+          </>
         ) : (
           <>
             <Text style={styles.label}>Rating</Text>
@@ -166,17 +276,6 @@ const BookingDetails = () => {
           </>
         )}
       </View>
-
-      {/* View Map Button */}
-      {booking.latitude && booking.longitude && (
-        <TouchableOpacity
-          style={styles.viewMapButton}
-          onPress={() => router.push(`/Jobs/booking/map?id=${id}`)}
-        >
-          <Ionicons name="map" size={20} color="#fff" />
-          <Text style={styles.viewMapButtonText}>View Map</Text>
-        </TouchableOpacity>
-      )}
     </ScrollView>
   );
 };
@@ -314,6 +413,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginLeft: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: "#fff",
+    marginTop: 4,
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: "top",
+  },
+  submitButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 16,
+  },
+  submitButtonDisabled: {
+    backgroundColor: "#ccc",
+  },
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 

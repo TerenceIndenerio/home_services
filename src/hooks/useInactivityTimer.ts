@@ -40,7 +40,7 @@ export function useInactivityTimer(timeout: number = 300000) {
       };
     }
 
-    // Fallback cleanup for non-web environments (like mobile)
+    
     return () => {
       if (timer.current) clearTimeout(timer.current);
       subscription.remove();

@@ -6,7 +6,7 @@ type AboutSectionProps = {
 };
 
 const AboutSection: React.FC<AboutSectionProps> = ({ about }) => {
-  // Convert to string if `about` is an array
+  
   const content = Array.isArray(about) ? about.join(" ") : about;
 
   return (

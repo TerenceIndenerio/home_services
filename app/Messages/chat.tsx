@@ -40,7 +40,7 @@ export default function SeekerChatPage() {
   const navigation = useNavigation();
   const params = useLocalSearchParams();
 
-  // Fallbacks for demo
+  
   const userName = params.userName || 'Arabela Manuta';
   const userRole = params.userRole || 'Client';
   const userAvatar = params.userAvatar || { uri: 'https://randomuser.me/api/portraits/women/44.jpg' };

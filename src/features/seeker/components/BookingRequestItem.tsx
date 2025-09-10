@@ -115,7 +115,7 @@ const BookingRequestItem: React.FC<BookingRequestItemProps> = ({
         </TouchableOpacity>
       </View>
 
-      {/* Success Modal */}
+      {}
       <Modal
         visible={showModal}
         transparent={true}
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#fff",
   },
-  // Modal styles
+  
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",

@@ -51,7 +51,7 @@ const OnboardingScreen: React.FC = () => {
 
   const setOnBoard = async () => {
     try {
-      await AsyncStorage.setItem("onBoard", "true");
+      await AsyncStorage.setItem("hasSetup", "true");
     } catch (e) {
       showAlert("Storage Error", "Failed to save setup flag.");
     }
