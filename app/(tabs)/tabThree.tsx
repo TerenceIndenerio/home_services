@@ -1,12 +1,12 @@
 import * as React from "react";
 import {
-    View,
-    StyleSheet,
     ScrollView,
     SafeAreaView,
     Dimensions,
     RefreshControl,
+    StyleSheet,
 } from "react-native";
+import { YStack } from "tamagui";
 
 import AccountProfile from "../AccountProfile/AccountProfileScreen";
 
@@ -45,9 +45,9 @@ const HomeScreen: React.FC = () => {
                     />
                 }
             >
-                <View style={styles.contentWrapper}>
+                <YStack style={styles.contentWrapper}>
                     <AccountProfile />
-                </View>
+                </YStack>
             </ScrollView>
         </SafeAreaView>
     );

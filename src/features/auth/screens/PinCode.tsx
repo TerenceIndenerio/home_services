@@ -1,8 +1,6 @@
 import * as React from "react";
-import {
-  View,
-  StyleSheet,
-} from "react-native";
+import { StyleSheet } from "react-native";
+import { YStack } from "tamagui";
 import { LoginHeader } from "../components/PinCodeHeader";
 import { LoginFooter } from "../components/PinCodeFooter";
 import PinCodeInput from "../components/PinCodeInput";
@@ -95,20 +93,20 @@ export const Login: React.FC<LoginProps> = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-      <View style={styles.container}>
+    <YStack style={{ flex: 1, backgroundColor: '#ffffff' }}>
+      <YStack style={styles.container}>
         <LoginHeader />
         <PinCodeInput length={4} onComplete={handlePinComplete} />
         <LoginFooter />
 
-      </View>
+      </YStack>
 
       <ErrorModal
         visible={errorModalVisible}
         message={errorMessage}
         onClose={() => setErrorModalVisible(false)}
       />
-    </View>
+    </YStack>
   );
 };
 

@@ -6,9 +6,10 @@ type Props = {
   visible: boolean;
   message: string;
   onClose: () => void;
+  title?: string;
 };
 
-const ErrorModal: React.FC<Props> = ({ visible, message, onClose }) => {
+const ErrorModal: React.FC<Props> = ({ visible, message, onClose, title = "Error" }) => {
   return (
     <Modal
       transparent
@@ -35,7 +36,7 @@ const ErrorModal: React.FC<Props> = ({ visible, message, onClose }) => {
         >
           <Ionicons name="alert-circle" size={48} color="red" />
           <Text style={{ fontSize: 18, fontWeight: "600", marginTop: 10 }}>
-            Login Failed
+            {title}
           </Text>
           <Text style={{ marginTop: 10, textAlign: "center", color: "#444" }}>
             {message}

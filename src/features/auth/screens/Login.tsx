@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { ScrollView, Alert, View, Text, KeyboardAvoidingView, Platform } from "react-native";
+import { Alert, Platform, KeyboardAvoidingView, TouchableOpacity } from "react-native";
+import { ScrollView, YStack, Text } from "tamagui";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import {
-  signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
@@ -22,7 +22,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 const Login: React.FC = () => {
   const router = useRouter();
-  const { setUserDocumentId } = useAuth();
+  const { login, state, clearError } = useAuth();
 
   const [errorVisible, setErrorVisible] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
@@ -41,13 +41,15 @@ const Login: React.FC = () => {
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential)
         .then(async (userCredential) => {
-          console.log("Google sign-in success:", userCredential.user);
-          
-          await setUserDocumentId(userCredential.user.uid);
-          
-          await AsyncStorage.setItem("hasSetup", "true");
-          router.replace("/");
-        })
+           console.log("Google sign-in success:", userCredential.user);
+
+           // Set ableToLogin flag for future app launches
+           await AsyncStorage.setItem("ableToLogin", "true");
+
+           // The AuthContext will handle the user state automatically
+           // Just navigate to home
+           router.replace("/");
+         })
         .catch((error) => {
           console.error("Firebase Google sign-in error:", error);
           setTimeout(() => {
@@ -55,24 +57,17 @@ const Login: React.FC = () => {
           }, 100);
         });
     }
-  }, [response]);
+  }, [response, router]);
 
   const handleLogin = async (emailOrPhone: string, password: string) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        emailOrPhone,
-        password
-      );
-      const uid = userCredential.user.uid;
+      clearError(); // Clear any previous errors
+      await login(emailOrPhone, password);
+      console.log("Login successful");
 
-      
-      await setUserDocumentId(uid);
+      // Set ableToLogin flag for future app launches
+      await AsyncStorage.setItem("ableToLogin", "true");
 
-      
-      await AsyncStorage.setItem("hasSetup", "true");
-
-      console.log("Login successful:", uid);
       router.replace("/");
     } catch (error: any) {
       console.error("Login failed:", error);
@@ -96,6 +91,10 @@ const Login: React.FC = () => {
 
   const handleForgotPassword = () => {
     console.log("Forgot password pressed");
+  };
+
+  const handleSignUp = () => {
+    router.push("/authentication/SignUp");
   };
 
   const handleSocialLogin = (platform: string) => {
@@ -131,25 +130,25 @@ const Login: React.FC = () => {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
     >
       <ScrollView
-        contentContainerStyle={[loginStyles.container, { flexGrow: 1, justifyContent: 'center' }]}
+        contentContainerStyle={{ ...loginStyles.container, flexGrow: 1, justifyContent: 'center' }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         <LoginHeader logoUrl="https://cdn.builder.io/api/v1/image/assets/a53206a1ac514d57bc5e1f4cc3ffd204/7e211eedc40e0ae6c463f082b4afa33b366aceb9?placeholderIfAbsent=true" />
-        <View style={{ alignItems: 'center', marginBottom: 20 }}>
+        <YStack style={{ alignItems: 'center', marginBottom: 20 }}>
           <Text style={{
             fontSize: 18,
             color: '#666',
             fontWeight: '500',
             fontFamily: 'Inter',
             textAlign: 'center',
-            marginTop: 8,
-            marginBottom: 12,
+            marginTop: 4,
+            marginBottom: 8,
             lineHeight: 24
           }}>
-            Welcome back! Please sign in to continue
+            Please login to continue
           </Text>
-        </View>
+        </YStack>
         <ErrorModal
           visible={errorVisible}
           message={errorMessage}
@@ -159,6 +158,13 @@ const Login: React.FC = () => {
           onLogin={handleLogin}
           onForgotPassword={handleForgotPassword}
         />
+        <YStack style={loginStyles.signUpContainer}>
+          <TouchableOpacity onPress={handleSignUp}>
+            <Text style={loginStyles.signUpText}>
+              Don't have an account? <Text style={loginStyles.signUpLink}>Sign Up</Text>
+            </Text>
+          </TouchableOpacity>
+        </YStack>
       </ScrollView>
     </KeyboardAvoidingView>
   );

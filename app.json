@@ -9,7 +9,7 @@
       ],
       "config": {
         "googleMaps": {
-          "apiKey": "YOUR_ANDROID_MAPS_API_KEY"
+          "apiKey": "AIzaSyDummyKeyForTestingPurposesOnly"
         }
       }
     },
@@ -29,7 +29,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
-      ]
+      ],
+      "expo-router"
     ],
     "extra": {
       "router": {

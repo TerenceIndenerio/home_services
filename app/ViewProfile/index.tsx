@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { ScrollView, Text, View, TouchableOpacity, Image, Linking, RefreshControl } from "react-native";
+import { ScrollView, TouchableOpacity, Image, Linking, RefreshControl } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { YStack, Text } from "tamagui";
 
 import { styles } from "../../src/styles/viewProfileStyles";
 import AboutSection from "../../src/features/viewProfile/components/AboutSection";
@@ -75,7 +76,7 @@ const ViewProfile = () => {
         }
       >
         {}
-        <View style={{ position: "relative", alignItems: "center" }}>
+        <YStack style={{ position: "relative", alignItems: "center" }}>
           <Image
             source={{ uri: String(imageUrl) }}
             style={{
@@ -96,9 +97,9 @@ const ViewProfile = () => {
               padding: 8,
             }}
             onPress={() => {
-              
+
               try {
-                
+
                 if (router.canGoBack && router.canGoBack()) {
                   router.back();
                 } else {
@@ -111,54 +112,54 @@ const ViewProfile = () => {
           >
             <Ionicons name="arrow-back" size={24} color="#6B11F4" />
           </TouchableOpacity>
-        </View>
+        </YStack>
 
         {}
-        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 18, marginHorizontal: 20 }}>
-          <View style={{ flex: 1 }}>
+        <YStack style={{ flexDirection: "row", alignItems: "center", marginTop: 18, marginHorizontal: 20 }}>
+          <YStack style={{ flex: 1 }}>
             <Text style={{ fontSize: 26, fontWeight: "700", color: "#222" }}>{provider}</Text>
             <Text style={{ fontSize: 18, color: "#888", marginTop: 2 }}>{title}</Text>
-          </View>
+          </YStack>
           <TouchableOpacity style={{ marginHorizontal: 8 }}>
             <Ionicons name="chatbubble-ellipses-outline" size={28} color="#6B11F4" />
           </TouchableOpacity>
           <TouchableOpacity>
             <Ionicons name="heart-outline" size={28} color="#6B11F4" />
           </TouchableOpacity>
-        </View>
+        </YStack>
 
         {}
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 22, marginHorizontal: 20 }}>
-          <View style={styles.infoCard}>
+        <YStack style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 22, marginHorizontal: 20 }}>
+          <YStack style={styles.infoCard}>
             <FontAwesome name="star" size={22} color="#FF6B35" />
             <Text style={styles.infoCardValue}>{rating || "4.8"}</Text>
             <Text style={styles.infoCardLabel}>Rating</Text>
-          </View>
-          <View style={styles.infoCard}>
+          </YStack>
+          <YStack style={styles.infoCard}>
             <MaterialIcons name="check-circle" size={22} color="#6B11F4" />
             <Text style={styles.infoCardValue}>56</Text>
             <Text style={styles.infoCardLabel}>Bookings</Text>
-          </View>
-          <View style={styles.infoCard}>
+          </YStack>
+          <YStack style={styles.infoCard}>
             <MaterialIcons name="timeline" size={22} color="#A259FF" />
             <Text style={styles.infoCardValue}>4</Text>
             <Text style={styles.infoCardLabel}>Years</Text>
-          </View>
-        </View>
+          </YStack>
+        </YStack>
 
         {}
-        <View style={{ marginTop: 28, marginHorizontal: 20 }}>
+        <YStack style={{ marginTop: 28, marginHorizontal: 20 }}>
           <Text style={{ fontWeight: "700", fontSize: 16, marginBottom: 8 }}>Available</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <View style={styles.timeBox}>
+          <YStack style={{ flexDirection: "row", alignItems: "center" }}>
+            <YStack style={styles.timeBox}>
               <Text style={styles.timeBoxText}>7:00AM</Text>
-            </View>
+            </YStack>
             <Text style={{ marginHorizontal: 8, fontWeight: "600" }}>To</Text>
-            <View style={styles.timeBox}>
+            <YStack style={styles.timeBox}>
               <Text style={styles.timeBoxText}>10:00PM</Text>
-            </View>
-          </View>
-        </View>
+            </YStack>
+          </YStack>
+        </YStack>
 
         {}
         <TouchableOpacity
@@ -171,13 +172,13 @@ const ViewProfile = () => {
         <AboutSection about={about} />
 
         {}
-        <View style={{ marginTop: 28, marginHorizontal: 0 }}></View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20 }}>
+        <YStack style={{ marginTop: 28, marginHorizontal: 0 }}></YStack>
+        <YStack style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20 }}>
           <Text style={{ fontWeight: "700", fontSize: 16 }}>Gallery</Text>
           <TouchableOpacity>
             <Text style={{ color: "#A259FF", fontWeight: "700", fontSize: 15 }}>View all</Text>
           </TouchableOpacity>
-        </View>
+        </YStack>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12, paddingVertical: 16 }}>
           {GALLERY_IMAGES.map((img, idx) => (
             <Image
@@ -196,21 +197,21 @@ const ViewProfile = () => {
         </ScrollView>
 
         {}
-        <View style={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 32 }}>
+        <YStack style={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 32 }}>
           <Text style={{ fontWeight: "700", fontSize: 18, marginBottom: 16 }}>Review</Text>
           {
             REVIEWS.map((review, idx) => (
-              <View key={idx} style={{ flexDirection: "row", marginBottom: 22 }}>
+              <YStack key={idx} style={{ flexDirection: "row", marginBottom: 22 }}>
                 <Image
                   source={{ uri: review.avatar }}
                   style={{ width: 38, height: 38, borderRadius: 19, marginRight: 12 }}
                 />
-                <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <YStack style={{ flex: 1 }}>
+                  <YStack style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                     <Text style={{ fontWeight: "700", fontSize: 15 }}>{review.name}</Text>
                     <Text style={{ fontSize: 13 }}>{review.date}</Text>
-                  </View>
-                  <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 2 }}>
+                  </YStack>
+                  <YStack style={{ flexDirection: "row", alignItems: "center", marginVertical: 2 }}>
                     {Array.from({ length: 5 }).map((_, i) => (
                       <FontAwesome
                         key={i}
@@ -220,13 +221,13 @@ const ViewProfile = () => {
                         style={{ marginRight: 2 }}
                       />
                     ))}
-                  </View>
+                  </YStack>
                   <Text style={{ fontSize: 14 }}>{review.text}</Text>
-                </View>
-              </View>
+                </YStack>
+              </YStack>
             ))
           }
-        </View>
+        </YStack>
       </ScrollView>
     </SafeAreaView >
   );

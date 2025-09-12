@@ -4,6 +4,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from '../../../src/features/auth/context/authContext';
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { WebView } from "react-native-webview";
+
+const { width, height } = Dimensions.get("window");
 
 type MapSectionProps = {
   onBookingDataReady: (data: any) => void;
@@ -12,7 +15,7 @@ type MapSectionProps = {
 };
 
 const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionProps) => {
-  const { userDocumentId } = useAuth();
+  const { state } = useAuth();
   const [iframeHtml, setIframeHtml] = useState<string | null>(null);
   const router = useRouter();
   const hasInitialized = useRef(false);
@@ -30,7 +33,7 @@ const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionP
 
     const fetchCoords = async () => {
       try {
-        const userId = providerId || userDocumentId;
+        const userId = providerId || state.userDocumentId;
 
         if (!userId) return;
 
@@ -88,6 +91,7 @@ const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionP
           <head>
             <meta charset="utf-8" />
             <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+            <title>Order Location Map</title>
             <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
             <style>body, html, #map { height: 100%; margin: 0; padding: 0; }</style>
           </head>
@@ -98,7 +102,7 @@ const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionP
               var map = L.map('map').setView([${latitude}, ${longitude}], 15);
               L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
               var endIcon = L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', iconSize: [32, 32], iconAnchor: [16, 32] });
-              L.marker([${latitude}, ${longitude}], { icon: endIcon }).addTo(map).bindPopup("Job Site").openPopup();
+              L.marker([${latitude}, ${longitude}], { icon: endIcon }).addTo(map).bindPopup("Order Location").openPopup();
             </script>
           </body>
           </html>
@@ -112,29 +116,38 @@ const MapSection = ({ onBookingDataReady, bookingData, providerId }: MapSectionP
     };
 
     fetchCoords();
-  }, [providerId, bookingData, userDocumentId]);
+  }, [providerId, bookingData, state.userDocumentId]);
 
   return (
     <View style={styles.container}>
-      {Platform.OS === "web" ? (
-        !providerId ? (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading map...</Text>
-          </View>
-        ) : (
-          <>
-            {}
+      {!providerId ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading map...</Text>
+        </View>
+      ) : (
+        <>
+          {Platform.OS === "web" && (
             <TouchableOpacity style={styles.returnButton} onPress={() => router.back()}>
               <Ionicons name="exit" size={22} color="#fff" />
             </TouchableOpacity>
+          )}
 
-            {iframeHtml && (
-              <iframe title="Job Site Map" srcDoc={iframeHtml} style={styles.iframe} />
-            )}
-          </>
-        )
-      ) : (
-        <Text style={styles.message}>Map view is only supported on web for now.</Text>
+          {iframeHtml && (
+            Platform.OS === "web" ? (
+              <iframe
+                title="Order Location Map"
+                srcDoc={iframeHtml}
+                style={styles.iframe as any}
+              />
+            ) : (
+              <WebView
+                originWhitelist={["*"]}
+                source={{ html: iframeHtml }}
+                style={styles.map}
+              />
+            )
+          )}
+        </>
       )}
     </View>
   );
@@ -160,6 +173,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height - 180,
     border: "none",
   } as any,
+  map: { flex: 1, width: width, height: height - 180 },
   message: {
     textAlign: "center",
     marginTop: 50,

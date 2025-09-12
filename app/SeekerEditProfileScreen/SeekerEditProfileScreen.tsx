@@ -40,7 +40,7 @@ interface UserData {
 
 const SeekerEditProfileScreen = () => {
   const router = useRouter();
-  const { user, userDocumentId } = useAuth();
+  const { state } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -62,7 +62,7 @@ const SeekerEditProfileScreen = () => {
   useEffect(() => {
     fetchUserData();
     fetchJobCategories();
-  }, [user?.uid]);
+  }, [state.user?.uid]);
 
   const fetchJobCategories = async () => {
     try {
@@ -80,13 +80,13 @@ const SeekerEditProfileScreen = () => {
   };
 
   const fetchUserData = async () => {
-    if (!user?.uid) {
+    if (!state.user?.uid) {
       setLoading(false);
       return;
     }
 
     try {
-      const documentId = userDocumentId || user.uid;
+      const documentId = state.userDocumentId || state.user.uid;
       const userDocRef = doc(db, 'users', documentId);
       const userDoc = await getDoc(userDocRef);
 
@@ -118,7 +118,7 @@ const SeekerEditProfileScreen = () => {
   };
 
   const handleSaveProfile = async () => {
-    if (!user?.uid || !userData) {
+    if (!state.user?.uid || !userData) {
       Alert.alert('Error', 'User data not available');
       return;
     }
@@ -131,9 +131,9 @@ const SeekerEditProfileScreen = () => {
     setSaving(true);
     try {
       let documentId = await AsyncStorage.getItem('user_document_id');
-      if (!documentId) documentId = user.uid;
+      if (!documentId) documentId = state.user.uid;
 
-      const userDocRef = doc(db, 'users', documentId);
+      const userDocRef = doc(db, 'users', documentId!);
 
       const updateData: Partial<UserData> = {
         firstName: name.split(' ')[0] || '',
@@ -173,7 +173,7 @@ const SeekerEditProfileScreen = () => {
     );
   }
 
-  if (!user?.uid) {
+  if (!state.user?.uid) {
     return (
       <View style={[styles.container, styles.center]}>
         <Text style={styles.errorText}>Please log in to edit your profile</Text>

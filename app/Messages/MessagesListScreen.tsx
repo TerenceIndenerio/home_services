@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
+import { FlatList, Image, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
+import { YStack, Text } from 'tamagui';
 
 
 export type MessageItem = {
@@ -38,25 +39,25 @@ const MessagesList: React.FC<MessagesListProps> = ({
             return <Image source={item.avatar} style={styles.avatar} />;
         } else {
             return (
-                <View style={styles.avatarPlaceholder}>
+                <YStack style={styles.avatarPlaceholder}>
                     <Text style={styles.avatarText}>{getInitials(item.name)}</Text>
-                </View>
+                </YStack>
             );
         }
     };
 
     const renderItem = ({ item }: { item: MessageItem }) => (
         <TouchableOpacity style={styles.row} onPress={() => onPressItem?.(item)}>
-            <View style={styles.avatarContainer}>
+            <YStack style={styles.avatarContainer}>
                 {renderAvatar(item)}
-            </View>
-            <View style={styles.content}>
-                <View style={styles.header}>
+            </YStack>
+            <YStack style={styles.content}>
+                <YStack style={styles.header}>
                     <Text style={styles.name}>{item.name}</Text>
                     <Text style={styles.time}>{item.time}</Text>
-                </View>
+                </YStack>
                 <Text style={styles.message} numberOfLines={2}>{item.message}</Text>
-            </View>
+            </YStack>
         </TouchableOpacity>
     );
 
@@ -65,7 +66,7 @@ const MessagesList: React.FC<MessagesListProps> = ({
             data={messages}
             keyExtractor={item => item.id}
             renderItem={renderItem}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            ItemSeparatorComponent={() => <YStack style={styles.separator} />}
             contentContainerStyle={{ backgroundColor: '#fff', paddingTop: 8 }}
             refreshControl={
                 <RefreshControl

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { YStack, Text } from 'tamagui';
+import { StyleSheet, Pressable } from 'react-native';
 
 type JobProps = {
   title: string;
@@ -26,12 +27,12 @@ export default function JobCard({
       <Text style={styles.title}>{job.title}</Text>
       <Text style={styles.description}>{job.description}</Text>
 
-      <View style={styles.row}>
-        <View style={[styles.badge, { backgroundColor: badgeColor }]}>
+      <YStack style={styles.row}>
+        <YStack style={[styles.badge, { backgroundColor: badgeColor }]}>
           <Text style={styles.badgeText}>{job.status}</Text>
-        </View>
+        </YStack>
         <Text style={styles.location}>{job.address}</Text>
-      </View>
+      </YStack>
 
       <Text style={styles.time}>{job.time}</Text>
       <Text style={styles.amount}>₱{job.amount}</Text>

@@ -38,7 +38,7 @@ const getUserProfile = async (userId: string) => {
 
 const AccountProfile = () => {
   const router = useRouter();
-  const { userDocumentId } = useAuth();
+  const { state } = useAuth();
   const [isJobSeeker, setIsJobSeeker] = useState(false);
   const [showSwitchButton, setShowSwitchButton] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -48,7 +48,7 @@ const AccountProfile = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userDocumentId) return;
+      if (!state.userDocumentId) return;
 
       try {
         const auth = getAuth();
@@ -58,7 +58,7 @@ const AccountProfile = () => {
           console.log("ID Token (Authorization):", idToken);
         }
 
-        const userData = await getUserProfile(userDocumentId);
+        const userData = await getUserProfile(state.userDocumentId);
 
         if (userData) {
           setIsJobSeeker(userData.isJobSeeker ?? false);
@@ -71,7 +71,7 @@ const AccountProfile = () => {
             setAvatarUrl(userData.avatarUrl);
           }
         } else {
-          const userRef = doc(db, "users", userDocumentId);
+          const userRef = doc(db, "users", state.userDocumentId);
           await setDoc(userRef, { isJobSeeker: false });
           setIsJobSeeker(false);
           console.log("Created new user doc with isJobSeeker = false");
@@ -84,15 +84,15 @@ const AccountProfile = () => {
     };
 
     fetchUserData();
-  }, [userDocumentId]);
+  }, [state.userDocumentId]);
 
   const toggleJobSeeker = async (value: boolean, shouldNavigate: boolean = true) => {
-    if (!userDocumentId) return;
+    if (!state.userDocumentId) return;
     setIsJobSeeker(value);
     setUpdating(true);
 
     try {
-      const userRef = doc(db, "users", userDocumentId);
+      const userRef = doc(db, "users", state.userDocumentId);
       await updateDoc(userRef, { isJobSeeker: value });
       console.log("Updated isJobSeeker to:", value);
 

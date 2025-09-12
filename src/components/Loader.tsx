@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, ActivityIndicator, Text, StyleSheet, Modal } from 'react-native';
+import { ActivityIndicator, StyleSheet, Modal } from 'react-native';
+import { YStack, Text } from 'tamagui';
 
 interface LoaderProps {
   visible: boolean;
@@ -23,12 +24,12 @@ const Loader: React.FC<LoaderProps> = ({
       visible={visible}
       onRequestClose={() => {}}
     >
-      <View style={styles.overlay}>
-        <View style={styles.container}>
+      <YStack style={styles.overlay}>
+        <YStack style={styles.container}>
           <ActivityIndicator size={size} color={color} />
           <Text style={styles.text}>{text}</Text>
-        </View>
-      </View>
+        </YStack>
+      </YStack>
     </Modal>
   );
 };

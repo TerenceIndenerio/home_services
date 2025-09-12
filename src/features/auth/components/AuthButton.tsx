@@ -1,77 +1,33 @@
 import React from "react";
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ViewStyle,
-  TextStyle,
-} from "react-native";
+import { Button } from "tamagui";
 
 interface AuthButtonProps {
   text: string;
   variant: "primary" | "secondary";
   onPress: () => void;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
 }
 
 const AuthButton: React.FC<AuthButtonProps> = ({
   text,
   variant,
   onPress,
-  style,
-  textStyle,
 }) => {
-  const buttonStyle =
-    variant === "primary" ? styles.primaryButton : styles.secondaryButton;
-
-  const buttonTextStyle =
-    variant === "primary"
-      ? styles.primaryButtonText
-      : styles.secondaryButtonText;
-
   return (
-    <TouchableOpacity
-      style={[buttonStyle, style]}
+    <Button
+      size="$4"
+      theme={variant === "primary" ? "light" : "purple"}
+      backgroundColor={variant === "primary" ? "$background" : "$purple9"}
+      borderColor={variant === "primary" ? "$purple9" : "$background"}
+      borderWidth={variant === "primary" ? 1 : 0}
+      color={variant === "primary" ? "$purple9" : "$background"}
+      fontWeight="700"
+      fontSize="$5"
       onPress={onPress}
-      activeOpacity={0.8}
+      pressStyle={{ opacity: 0.8 }}
     >
-      <Text style={[buttonTextStyle, textStyle]}>{text}</Text>
-    </TouchableOpacity>
+      {text}
+    </Button>
   );
 };
-
-const styles = StyleSheet.create({
-  primaryButton: {
-    padding: 4,
-    height: 45,
-    borderRadius: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-  },
-  primaryButtonText: {
-    fontFamily: "Inter",
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#8C52FF",
-  },
-  secondaryButton: {
-    padding: 4,
-    height: 45,
-    borderRadius: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    backgroundColor: "#8C52FF",
-  },
-  secondaryButtonText: {
-    fontFamily: "Inter",
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#FFFFFF",
-  },
-});
 
 export default AuthButton;

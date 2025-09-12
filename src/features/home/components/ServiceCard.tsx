@@ -1,5 +1,6 @@
 import * as React from "react";
-import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from "react-native";
+import { TouchableOpacity, StyleSheet } from "react-native";
+import { YStack, Text, Image } from "tamagui";
 import Colors from "../../../../app/constants/Colors";
 
 interface ServiceCardProps {
@@ -24,18 +25,18 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <TouchableOpacity onPress={handlePress} style={styles.cardContainer}>
       <Image source={{ uri: imageUrl }} style={styles.serviceImage} />
-      <View style={styles.infoContainer}>
+      <YStack style={styles.infoContainer}>
         <Text style={styles.serviceTitle} numberOfLines={1}>
           {title}
         </Text>
         <Text style={styles.providerName} numberOfLines={1}>
           {provider}
         </Text>
-        <View style={styles.ratingContainer}>
+        <YStack style={styles.ratingContainer}>
           <Text style={styles.ratingStar}>⭐</Text>
           <Text style={styles.ratingText}>{rating}</Text>
-        </View>
-      </View>
+        </YStack>
+      </YStack>
     </TouchableOpacity>
   );
 };

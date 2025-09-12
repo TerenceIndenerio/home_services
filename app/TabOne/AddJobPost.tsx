@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { useAuth } from '@/src/features/auth/context/authContext';
 import Loader from '@/src/components/Loader';
+import { YStack, Text } from 'tamagui';
 
 const employmentTypes = [
   'Full Time',
@@ -24,7 +25,7 @@ const AddJobPost: React.FC = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { user } = useAuth();
+  const { state } = useAuth();
 
   const handleAddSkill = () => {
     if (skillInput.trim() && !skills.includes(skillInput.trim())) {
@@ -38,7 +39,7 @@ const AddJobPost: React.FC = () => {
   };
 
   const handlePostJob = async () => {
-    if (!user) {
+    if (!state.user) {
       Alert.alert('Error', 'You must be logged in to post a job.');
       return;
     }
@@ -56,7 +57,7 @@ const AddJobPost: React.FC = () => {
         description,
         pay: parseFloat(pay),
         skills: skills, // Store as JSON array
-        uid: user.uid,
+        uid: state.user.uid,
         location: 'Placeholder Location',
         status: 'open',
         createdAt: new Date(),
@@ -97,7 +98,7 @@ const AddJobPost: React.FC = () => {
           <Ionicons name={isDropdownOpen ? 'chevron-up' : 'chevron-down'} size={20} color="#8F5CFF" />
         </TouchableOpacity>
         {isDropdownOpen && (
-          <View style={styles.dropdownMenu}>
+          <YStack style={styles.dropdownMenu}>
             {employmentTypes.map(type => (
               <TouchableOpacity
                 key={type}
@@ -110,7 +111,7 @@ const AddJobPost: React.FC = () => {
                 <Text>{type}</Text>
               </TouchableOpacity>
             ))}
-          </View>
+          </YStack>
         )}
 
         <Text style={[styles.label, { marginTop: 32 }]}>Job Title</Text>
@@ -140,7 +141,7 @@ const AddJobPost: React.FC = () => {
         />
 
         <Text style={[styles.label, { marginTop: 32 }]}>What skills are you looking for?</Text>
-        <View style={styles.skillInputRow}>
+        <YStack style={styles.skillInputRow}>
           <TextInput
             style={[styles.skillInput, { flex: 1, marginRight: 8 }]}
             placeholder="Enter skill"
@@ -150,9 +151,9 @@ const AddJobPost: React.FC = () => {
           <TouchableOpacity style={styles.addSkillBtn} onPress={handleAddSkill}>
             <Text style={styles.addSkillText}>Add</Text>
           </TouchableOpacity>
-        </View>
+        </YStack>
 
-        <View style={styles.skillsRow}>
+        <YStack style={styles.skillsRow}>
           {skills.map(skill => (
             <TouchableOpacity
               key={skill}
@@ -162,8 +163,8 @@ const AddJobPost: React.FC = () => {
               <Text style={styles.skillChipText}>{skill}</Text>
             </TouchableOpacity>
           ))}
-        </View>
-        <View style={styles.buttonRow}>
+        </YStack>
+        <YStack style={styles.buttonRow}>
           <TouchableOpacity style={styles.cancelBtn} onPress={() => {
 
             try {
@@ -182,7 +183,7 @@ const AddJobPost: React.FC = () => {
           <TouchableOpacity style={styles.nextBtn} onPress={handlePostJob}>
             <Text style={styles.nextText}>Post Job</Text>
           </TouchableOpacity>
-        </View>
+        </YStack>
       </ScrollView>
       <Loader visible={loading} text="Posting job..." />
     </>

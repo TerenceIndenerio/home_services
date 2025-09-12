@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, Image, SafeAreaView } from "react-native";
-import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native";
+import { YStack, Text, Image } from "tamagui";
+import { useThrottledRouter } from "../../../hooks/useThrottledRouter";
 import { styles } from "../../../styles/onBoardingStyles";
 import ArrowButton from "../components/ArrowButton";
 import PaginationDots from "../components/Pagination";
@@ -32,7 +33,7 @@ const OnboardingScreen: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [errorVisible, setErrorVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const router = useRouter();
+  const router = useThrottledRouter();
 
   const handleNext = () => {
     if (currentPage < onboardingData.length - 1) {
@@ -66,21 +67,21 @@ const OnboardingScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
-      <View style={styles.container}>
-        <View style={styles.imageContainer}>
+      <YStack style={styles.container}>
+        <YStack style={styles.imageContainer}>
           <Image
             source={{ uri: imageUri }}
             style={styles.mainImage}
             accessibilityLabel={title}
           />
-        </View>
+        </YStack>
 
-        <View style={styles.textContainer}>
+        <YStack style={styles.textContainer}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
-        </View>
+        </YStack>
 
-        <View style={styles.navigationContainer}>
+        <YStack style={styles.navigationContainer}>
           <ArrowButton
             direction="left"
             active={currentPage > 0}
@@ -91,8 +92,8 @@ const OnboardingScreen: React.FC = () => {
             activeIndex={currentPage}
           />
           <ArrowButton direction="right" active={true} onPress={handleNext} />
-        </View>
-      </View>
+        </YStack>
+      </YStack>
     </SafeAreaView>
   );
 };

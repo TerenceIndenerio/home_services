@@ -1,22 +1,23 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { YStack, Text } from 'tamagui';
 
 export default function JobTabBar({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (tab: string) => void }) {
   return (
-    <View style={styles.tabBar}>
+    <YStack style={styles.tabBar}>
       <TouchableOpacity style={styles.tab} onPress={() => setActiveTab('Jobs For You')}>
         <Text style={[styles.tabText, activeTab === 'Jobs For You' && styles.activeTabText]}>Jobs For You</Text>
-        {activeTab === 'Jobs For You' && <View style={styles.underline} />}
+        {activeTab === 'Jobs For You' && <YStack style={styles.underline} />}
       </TouchableOpacity>
       <TouchableOpacity style={styles.tab} onPress={() => setActiveTab('Accepted Jobs')}>
         <Text style={[styles.tabText, activeTab === 'Accepted Jobs' && styles.activeTabText]}>Accepted Jobs</Text>
-        {activeTab === 'Accepted Jobs' && <View style={styles.underline} />}
+        {activeTab === 'Accepted Jobs' && <YStack style={styles.underline} />}
       </TouchableOpacity>
       <TouchableOpacity style={styles.tab} onPress={() => setActiveTab('On Going Job')}>
         <Text style={[styles.tabText, activeTab === 'On Going Job' && styles.activeTabText]}>On Going Job</Text>
-        {activeTab === 'On Going Job' && <View style={styles.underline} />}
+        {activeTab === 'On Going Job' && <YStack style={styles.underline} />}
       </TouchableOpacity>
-    </View>
+    </YStack>
   );
 }
 

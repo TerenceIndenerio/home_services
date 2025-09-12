@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
+import { YStack, XStack, Text, Button, Card, Separator } from 'tamagui';
 
 export default function JobDetails() {
   const params = useLocalSearchParams();
@@ -105,81 +106,114 @@ export default function JobDetails() {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#9B5DE5" />
-        <Text style={styles.loadingText}>Loading job details...</Text>
-      </View>
+      <YStack flex={1} backgroundColor="$background" justifyContent="center" alignItems="center">
+        <ActivityIndicator size="large" color="$purple9" />
+        <Text fontSize="$4" color="$gray11" marginTop="$4">Loading job details...</Text>
+      </YStack>
     );
   }
 
   if (error || !jobDetails) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
-        <Text style={styles.errorText}>{error || 'Job details not available'}</Text>
-        <Pressable style={styles.retryButton} onPress={() => router.back()}>
-          <Text style={styles.retryButtonText}>Go Back</Text>
-        </Pressable>
-      </View>
+      <YStack flex={1} backgroundColor="$background" justifyContent="center" alignItems="center">
+        <Text fontSize="$4" color="$red9" textAlign="center" marginBottom="$5">
+          {error || 'Job details not available'}
+        </Text>
+        <Button
+          size="$4"
+          theme="purple"
+          backgroundColor="$purple9"
+          color="$background"
+          fontWeight="bold"
+          onPress={() => router.back()}
+          pressStyle={{ opacity: 0.8 }}
+        >
+          Go Back
+        </Button>
+      </YStack>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerCustom}>
-        <Pressable style={styles.backButton} onPress={() => router.back()} accessibilityLabel="Go back">
-          <Text style={styles.backIcon}>{'\u2039'}</Text>
-        </Pressable>
-        <Text style={styles.headerTitle}>Job Details</Text>
-      </View>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.jobHeader}>
-          <Text style={styles.title}>{jobDetails.title}</Text>
-          <Text style={styles.name}>{jobDetails.name}</Text>
-          <View style={styles.jobMeta}>
-            <View style={styles.metaItem}>
-              <Text style={styles.metaIcon}>📍</Text>
-              <Text style={styles.metaText}>{jobDetails.location}</Text>
-            </View>
-            <View style={styles.metaItem}>
-              <Text style={styles.metaIcon}>⏰</Text>
-              <Text style={styles.metaText}>{jobDetails.time}</Text>
-            </View>
-            <View style={styles.metaItem}>
-              <Text style={styles.metaIcon}>💰</Text>
-              <Text style={styles.metaText}>{jobDetails.rate}</Text>
-            </View>
-          </View>
-          <View style={styles.tagsRow}>
+    <YStack flex={1} backgroundColor="$background">
+      <XStack
+        alignItems="center"
+        backgroundColor="$purple9"
+        height={60}
+        paddingHorizontal="$3"
+      >
+        <Button
+          size="$3"
+          circular
+          backgroundColor="transparent"
+          color="$background"
+          onPress={() => router.back()}
+          accessibilityLabel="Go back"
+          pressStyle={{ opacity: 0.8 }}
+        >
+          {'\u2039'}
+        </Button>
+        <Text color="$background" fontWeight="bold" fontSize="$5" marginLeft="$2">
+          Job Details
+        </Text>
+      </XStack>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 120 }}>
+        <Card backgroundColor="$background" borderRadius="$4" padding="$5" marginBottom="$4" shadowColor="$shadowColor" shadowOpacity={0.05} shadowRadius={4} shadowOffset={{ width: 0, height: 2 }} elevation={2}>
+          <Text fontSize="$5" fontWeight="bold" textAlign="center" marginTop="$1">{jobDetails.title}</Text>
+          <Text fontSize="$4" textAlign="center" color="$gray11" marginBottom="$2">{jobDetails.name}</Text>
+          <XStack justifyContent="space-around" marginTop="$3" marginBottom="$4">
+            <YStack alignItems="center" flex={1}>
+              <Text fontSize="$4" marginBottom="$1">📍</Text>
+              <Text fontSize="$3" color="$gray10" textAlign="center">{jobDetails.location}</Text>
+            </YStack>
+            <YStack alignItems="center" flex={1}>
+              <Text fontSize="$4" marginBottom="$1">⏰</Text>
+              <Text fontSize="$3" color="$gray10" textAlign="center">{jobDetails.time}</Text>
+            </YStack>
+            <YStack alignItems="center" flex={1}>
+              <Text fontSize="$4" marginBottom="$1">💰</Text>
+              <Text fontSize="$3" color="$gray10" textAlign="center">{jobDetails.rate}</Text>
+            </YStack>
+          </XStack>
+          <XStack flexWrap="wrap" justifyContent="center" marginBottom="$2">
             {jobDetails.tags.map((tag: string) => (
-              <View key={tag} style={styles.tag}><Text style={styles.tagText}>{tag}</Text></View>
+              <Text key={tag} backgroundColor="$purple9" borderRadius="$2" paddingHorizontal="$2" paddingVertical="$1" margin="$1" color="$background" fontSize="$2">
+                {tag}
+              </Text>
             ))}
-          </View>
-          <Text style={styles.postedDate}>Posted on {jobDetails.postedDate}</Text>
-        </View>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📝 Job Description</Text>
-          <Text style={styles.sectionDescription}>{jobDetails.description}</Text>
-        </View>
+          </XStack>
+          <Text fontSize="$3" color="$gray8" textAlign="center" marginBottom="$2">Posted on {jobDetails.postedDate}</Text>
+        </Card>
+        <Card backgroundColor="$background" borderRadius="$4" padding="$4" marginTop="$4" marginBottom="$2" shadowColor="$shadowColor" shadowOpacity={0.05} shadowRadius={4} shadowOffset={{ width: 0, height: 2 }} elevation={2}>
+          <Text fontSize="$5" fontWeight="bold" color="$color" marginBottom="$3" textAlign="center">📝 Job Description</Text>
+          <Text fontSize="$4" color="$gray11" lineHeight={20}>{jobDetails.description}</Text>
+        </Card>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📋 Job Information</Text>
-          <View style={styles.sectionContent}>
+        <Card backgroundColor="$background" borderRadius="$4" padding="$4" marginTop="$4" marginBottom="$2" shadowColor="$shadowColor" shadowOpacity={0.05} shadowRadius={4} shadowOffset={{ width: 0, height: 2 }} elevation={2}>
+          <Text fontSize="$5" fontWeight="bold" color="$color" marginBottom="$3" textAlign="center">📋 Job Information</Text>
+          <YStack gap="$3">
             <Detail icon="📊" label="Status" value={jobDetails.status || 'N/A'} />
             <Detail icon="💰" label="Amount" value={jobDetails.amount ? `₱${jobDetails.amount}` : 'N/A'} />
             <Detail icon="👤" label="Provider ID" value={jobDetails.providerId || 'N/A'} />
             <Detail icon="👨‍💼" label="User ID" value={jobDetails.userId || 'N/A'} />
-          </View>
-        </View>
+          </YStack>
+        </Card>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📍 Location Details</Text>
-          <View style={styles.sectionContent}>
+        <Card backgroundColor="$background" borderRadius="$4" padding="$4" marginTop="$4" marginBottom="$2" shadowColor="$shadowColor" shadowOpacity={0.05} shadowRadius={4} shadowOffset={{ width: 0, height: 2 }} elevation={2}>
+          <Text fontSize="$5" fontWeight="bold" color="$color" marginBottom="$3" textAlign="center">📍 Location Details</Text>
+          <YStack gap="$3">
             <Detail icon="🏠" label="Address" value={jobDetails.address || jobDetails.location || 'N/A'} />
             <Detail icon="📍" label="Coordinates" value={`${jobDetails.latitude || 'N/A'}, ${jobDetails.longitude || 'N/A'}`} />
-          </View>
+          </YStack>
           {jobDetails.latitude && jobDetails.longitude && (
-            <Pressable
-              style={styles.viewMapButton}
+            <Button
+              size="$4"
+              theme="purple"
+              backgroundColor="$purple9"
+              color="$background"
+              fontSize="$4"
+              fontWeight="600"
+              marginTop="$3"
               onPress={() => {
                 const latitude = jobDetails.latitude;
                 const longitude = jobDetails.longitude;
@@ -189,138 +223,112 @@ export default function JobDetails() {
 
                 router.push(`/Jobs/booking/map?latitude=${latitude}&longitude=${longitude}&address=${encodeURIComponent(address)}&jobTitle=${encodeURIComponent(jobTitle)}&description=${encodeURIComponent(description)}`);
               }}
+              pressStyle={{ opacity: 0.8 }}
             >
-              <Text style={styles.viewMapButtonText}>🗺️ View Map</Text>
-            </Pressable>
+              🗺️ View Map
+            </Button>
           )}
-        </View>
+        </Card>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>⏰ Schedule & Timeline</Text>
-          <View style={styles.sectionContent}>
+        <Card backgroundColor="$background" borderRadius="$4" padding="$4" marginTop="$4" marginBottom="$2" shadowColor="$shadowColor" shadowOpacity={0.05} shadowRadius={4} shadowOffset={{ width: 0, height: 2 }} elevation={2}>
+          <Text fontSize="$5" fontWeight="bold" color="$color" marginBottom="$3" textAlign="center">⏰ Schedule & Timeline</Text>
+          <YStack gap="$3">
             <Detail icon="📅" label="Created At" value={jobDetails.createdAt || 'N/A'} />
             <Detail icon="🕐" label="Schedule Date" value={jobDetails.scheduleDate || 'N/A'} />
-          </View>
-        </View>
+          </YStack>
+        </Card>
       </ScrollView>
-      <View style={styles.buttonRow}>
+      <XStack
+        justifyContent="space-around"
+        alignItems="center"
+        padding="$3"
+        borderTopWidth={1}
+        borderTopColor="$gray6"
+        backgroundColor="$background"
+        position="absolute"
+        bottom={0}
+        left={0}
+        right={0}
+      >
         {jobDetails.status === 'accepted' ? (
-          <Pressable
-            style={styles.startButton}
+          <Button
+            size="$4"
+            theme="green"
+            backgroundColor="$green9"
+            color="$background"
+            fontWeight="bold"
             onPress={() => handleStatusUpdate("ongoing")}
             disabled={updatingStatus}
+            pressStyle={{ opacity: 0.8 }}
           >
-            <Text style={styles.startButtonText}>
-              {updatingStatus ? "Updating..." : "Start Job"}
-            </Text>
-          </Pressable>
+            {updatingStatus ? "Updating..." : "Start Job"}
+          </Button>
         ) : jobDetails.status === 'ongoing' ? (
-          <Pressable
-            style={styles.finishButton}
+          <Button
+            size="$4"
+            theme="blue"
+            backgroundColor="$blue9"
+            color="$background"
+            fontWeight="bold"
             onPress={() => handleStatusUpdate("done")}
             disabled={updatingStatus}
+            pressStyle={{ opacity: 0.8 }}
           >
-            <Text style={styles.finishButtonText}>
-              {updatingStatus ? "Updating..." : "Finish Job"}
-            </Text>
-          </Pressable>
+            {updatingStatus ? "Updating..." : "Finish Job"}
+          </Button>
         ) : jobDetails.status === 'done' ? (
-          <View style={styles.completedContainer}>
-            <Text style={styles.completedText}>Job Completed</Text>
-          </View>
+          <YStack alignItems="center" justifyContent="center" paddingVertical="$2">
+            <Text color="$green9" fontWeight="bold" fontSize="$5">Job Completed</Text>
+          </YStack>
         ) : (
-          <>
-            <Pressable
-              style={styles.applyButton}
+          <XStack gap="$4">
+            <Button
+              size="$4"
+              theme="purple"
+              backgroundColor="$purple9"
+              color="$background"
+              fontWeight="bold"
               onPress={() => handleStatusUpdate("accepted")}
               disabled={updatingStatus}
+              pressStyle={{ opacity: 0.8 }}
             >
-              <Text style={styles.applyButtonText}>
-                {updatingStatus ? "Updating..." : "Accept Job"}
-              </Text>
-            </Pressable>
+              {updatingStatus ? "Updating..." : "Accept Job"}
+            </Button>
 
-            <Pressable
-              style={styles.declineButton}
+            <Button
+              size="$4"
+              theme="red"
+              backgroundColor="transparent"
+              borderColor="$red9"
+              borderWidth={1}
+              color="$red9"
+              fontWeight="bold"
               onPress={() => handleStatusUpdate("declined")}
               disabled={updatingStatus}
+              pressStyle={{ opacity: 0.8 }}
             >
-              <Text style={styles.declineButtonText}>
-                {updatingStatus ? "Updating..." : "Decline"}
-              </Text>
-            </Pressable>
-          </>
+              {updatingStatus ? "Updating..." : "Decline"}
+            </Button>
+          </XStack>
         )}
-      </View>
-    </View>
+      </XStack>
+    </YStack>
   );
 }
 
 const Detail = ({ icon, label, value }: { icon?: string; label: string; value: string }) => (
-  <View style={styles.detailItem}>
-    {icon && <Text style={styles.detailIcon}>{icon}</Text>}
-    <View style={styles.detailContent}>
-      <Text style={styles.detailLabel}>{label}</Text>
-      <Text style={styles.detailValue}>{value}</Text>
-    </View>
-  </View>
+  <XStack
+    alignItems="center"
+    marginBottom="$3"
+    paddingVertical="$2"
+    paddingHorizontal="$3"
+    backgroundColor="$gray2"
+    borderRadius="$3"
+  >
+    {icon && <Text fontSize="$5" marginRight="$3" width={24} textAlign="center">{icon}</Text>}
+    <YStack flex={1}>
+      <Text fontSize="$3" fontWeight="600" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>{label}</Text>
+      <Text fontSize="$4" fontWeight="500" color="$color" marginTop="$1">{value}</Text>
+    </YStack>
+  </XStack>
 );
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  centerContent: { justifyContent: 'center', alignItems: 'center' },
-  headerCustom: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#9B5DE5', height: 60, paddingHorizontal: 12 },
-  backButton: { padding: 8, marginRight: 8 },
-  backIcon: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
-  headerTitle: { color: '#fff', fontWeight: 'bold', fontSize: 18 },
-  headerBar: { height: 60, backgroundColor: '#9B5DE5', marginBottom: 8, borderTopLeftRadius: 8, borderTopRightRadius: 8 },
-  content: { padding: 16, paddingBottom: 120 },
-  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginTop: 8 },
-  name: { fontSize: 14, textAlign: 'center', color: '#444', marginBottom: 8 },
-  row: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 8 },
-  icon: { fontSize: 14, marginHorizontal: 2 },
-  info: { fontSize: 13, color: '#555', marginHorizontal: 4 },
-  tagsRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginBottom: 8 },
-  tag: { backgroundColor: '#9B5DE5', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2, margin: 2 },
-  tagText: { color: '#fff', fontSize: 12 },
-  postedDate: { fontSize: 12, color: '#888', textAlign: 'center', marginBottom: 8 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#333', marginBottom: 12, textAlign: 'center' },
-  description: { fontSize: 13, color: '#333', marginBottom: 8 },
-  list: { marginLeft: 8, marginBottom: 8 },
-  listItem: { fontSize: 13, color: '#333', marginBottom: 2 },
-  buttonRow: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', padding: 12, borderTopWidth: 1, borderColor: '#eee', backgroundColor: '#fff', position: 'absolute', bottom: 0, left: 0, right: 0 },
-  applyButton: { backgroundColor: '#9B5DE5', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 32 },
-  applyButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  bookmarkButton: { borderWidth: 1, borderColor: '#9B5DE5', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 32 },
-  bookmarkButtonText: { color: '#9B5DE5', fontWeight: 'bold', fontSize: 16 },
-  declineButton: { borderWidth: 1, borderColor: '#ff4444', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 32 },
-  declineButtonText: { color: '#ff4444', fontWeight: 'bold', fontSize: 16 },
-  startButton: { backgroundColor: '#28a745', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 32 },
-  startButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  finishButton: { backgroundColor: '#007bff', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 32 },
-  finishButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  completedContainer: { alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
-  completedText: { color: '#28a745', fontWeight: 'bold', fontSize: 16 },
-  detailSection: { marginBottom: 8 },
-  label: { fontSize: 14, fontWeight: '600', color: '#666' },
-  value: { fontSize: 16, fontWeight: '400', color: '#333' },
-  detailItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingVertical: 8, paddingHorizontal: 12, backgroundColor: '#f8f9fa', borderRadius: 8 },
-  detailIcon: { fontSize: 18, marginRight: 12, width: 24, textAlign: 'center' },
-  detailContent: { flex: 1 },
-  detailLabel: { fontSize: 12, fontWeight: '600', color: '#666', textTransform: 'uppercase', letterSpacing: 0.5 },
-  detailValue: { fontSize: 14, fontWeight: '500', color: '#333', marginTop: 2 },
-  section: { marginTop: 16, marginBottom: 8, padding: 16, backgroundColor: '#fff', borderRadius: 12, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  sectionContent: { gap: 8 },
-  sectionDescription: { fontSize: 14, color: '#555', lineHeight: 20 },
-  jobHeader: { backgroundColor: '#fff', borderRadius: 12, padding: 20, marginBottom: 16, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  jobMeta: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 12, marginBottom: 16 },
-  metaItem: { alignItems: 'center', flex: 1 },
-  metaIcon: { fontSize: 16, marginBottom: 4 },
-  metaText: { fontSize: 12, color: '#666', textAlign: 'center' },
-  viewMapButton: { backgroundColor: '#9B5DE5', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 12, borderRadius: 8, marginTop: 12 },
-  viewMapButtonText: { color: '#fff', fontSize: 14, fontWeight: '600' },
-  loadingText: { marginTop: 16, fontSize: 16, color: '#666' },
-  errorText: { fontSize: 16, color: '#ff4444', textAlign: 'center', marginBottom: 20 },
-  retryButton: { backgroundColor: '#9B5DE5', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-  retryButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-});

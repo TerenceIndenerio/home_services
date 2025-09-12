@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
-import { Button, Card, Flex, Text, WhiteSpace } from '@ant-design/react-native';
+import { Button, Card, YStack, XStack, Text } from 'tamagui';
 
 type TabType = 'Scheduled' | 'Completed' | 'Cancelled';
 type Booking = {
@@ -23,41 +23,39 @@ interface BookingCardProps {
 
 export default function BookingCard({ data, tab }: BookingCardProps) {
   return (
-    <Card>
-      <Card.Body>
-        <Flex>
-          <Flex.Item style={{ paddingRight: 4 }}>
-            <Image source={{ uri: data.image }} style={styles.avatar} />
-          </Flex.Item>
-          <Flex.Item style={{ flex: 4 }}>
-            <Flex justify="between">
-              <Text style={styles.title} numberOfLines={1}>{data.title}</Text>
-              {tab === 'Scheduled' && (
-                <Text style={styles.statusOngoing}>On Going</Text>
-              )}
-              {tab === 'Cancelled' && (
-                <Text style={styles.statusPenalty}>{data.status}</Text>
-              )}
-            </Flex>
-            <WhiteSpace size="xs" />
-            <Text style={styles.details}>{data.date}</Text>
-            <Text style={styles.details}>{data.address}</Text>
+    <Card padding="$4" marginBottom="$2">
+      <XStack>
+        <YStack paddingRight="$1">
+          <Image source={{ uri: data.image }} style={styles.avatar} />
+        </YStack>
+        <YStack flex={4}>
+          <XStack justifyContent="space-between">
+            <Text style={styles.title} numberOfLines={1}>{data.title}</Text>
             {tab === 'Scheduled' && (
-              <Text style={styles.details}>Customer: {data.customer}</Text>
+              <Text style={styles.statusOngoing}>On Going</Text>
             )}
             {tab === 'Cancelled' && (
-              <Text style={styles.details}>Cancelled by {data.cancelledBy} ({data.date})</Text>
+              <Text style={styles.statusPenalty}>{data.status}</Text>
             )}
-            {tab === 'Cancelled' && (
-              <Text style={styles.penalty}>~{data.penalty}</Text>
-            )}
-             <WhiteSpace size="sm" />
-            <Button type={tab === 'Scheduled' ? 'ghost' : 'primary'} size="small">
-              <Text>{data.button.label}</Text>
-            </Button>
-          </Flex.Item>
-        </Flex>
-      </Card.Body>
+          </XStack>
+          <YStack marginTop="$1" />
+          <Text style={styles.details}>{data.date}</Text>
+          <Text style={styles.details}>{data.address}</Text>
+          {tab === 'Scheduled' && (
+            <Text style={styles.details}>Customer: {data.customer}</Text>
+          )}
+          {tab === 'Cancelled' && (
+            <Text style={styles.details}>Cancelled by {data.cancelledBy} ({data.date})</Text>
+          )}
+          {tab === 'Cancelled' && (
+            <Text style={styles.penalty}>~{data.penalty}</Text>
+          )}
+          <YStack marginTop="$2" />
+          <Button variant={tab === 'Scheduled' ? 'outlined' : undefined} size="$3">
+            <Text>{data.button.label}</Text>
+          </Button>
+        </YStack>
+      </XStack>
     </Card>
   );
 }

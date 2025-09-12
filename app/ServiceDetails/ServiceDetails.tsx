@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, RefreshControl } from 'react-native';
+import { TouchableOpacity, ScrollView, RefreshControl, StyleSheet } from 'react-native';
+import { YStack, XStack, Text, Image } from 'tamagui';
 import { Ionicons } from '@expo/vector-icons';
 import AuthButton from '@/src/features/auth/components/AuthButton';
 import ServiceDetailsDropdown from '@/app/ServiceDetails/components/ServiceDetailsDropdown';
@@ -29,21 +30,21 @@ const ServiceDetails: React.FC = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <YStack style={styles.container}>
       {}
-      <View style={styles.header}>
+      <YStack style={styles.header}>
         <TouchableOpacity>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Service Details</Text>
         <Text style={styles.timer}>60s</Text>
-      </View>
+      </YStack>
 
       {}
-      <View style={styles.mapSection}>
+      <YStack style={styles.mapSection}>
         <Ionicons name="location" size={40} color="#8C52FF" style={{ alignSelf: 'center', marginTop: 30 }} />
-        <View style={styles.mapPin} />
-      </View>
+        <YStack style={styles.mapPin} />
+      </YStack>
 
       <ScrollView 
         contentContainerStyle={styles.content}
@@ -57,22 +58,22 @@ const ServiceDetails: React.FC = () => {
         }
       >
         {}
-        <View style={styles.userRow}>
+        <YStack style={styles.userRow}>
           <Image source={{ uri: customer.image }} style={styles.avatar} />
-          <View style={{ flex: 1, marginLeft: 10 }}>
+          <YStack style={{ flex: 1, marginLeft: 10 }}>
             <Text style={styles.userName}>{customer.name}</Text>
             <Text style={styles.userLabel}>Customer Name</Text>
-          </View>
+          </YStack>
           <TouchableOpacity>
             <Ionicons name="chevron-forward" size={20} color="#333" />
           </TouchableOpacity>
-        </View>
+        </YStack>
 
         {}
-        <View style={styles.infoBox}>
+        <YStack style={styles.infoBox}>
           <Text style={styles.infoLabel}>Location</Text>
           <Text style={styles.infoValue}>{customer.location}</Text>
-        </View>
+        </YStack>
 
         {}
         <ServiceDetailsDropdown
@@ -85,11 +86,21 @@ const ServiceDetails: React.FC = () => {
       </ScrollView>
 
       {}
-      <View style={styles.buttonRow}>
-        <AuthButton text="Accept" variant="secondary" onPress={() => {}} style={{ flex: 1, marginRight: 8 }} />
-        <AuthButton text="Decline" variant="primary" onPress={() => {}} style={{ flex: 1, marginLeft: 8 }} />
-      </View>
-    </View>
+      <XStack
+        padding="$4"
+        backgroundColor="$background"
+        borderTopWidth={1}
+        borderTopColor="$gray6"
+        position="absolute"
+        bottom={0}
+        left={0}
+        right={0}
+        gap="$2"
+      >
+        <AuthButton text="Accept" variant="secondary" onPress={() => {}} />
+        <AuthButton text="Decline" variant="primary" onPress={() => {}} />
+      </XStack>
+    </YStack>
   );
 };
 

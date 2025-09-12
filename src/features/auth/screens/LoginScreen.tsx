@@ -1,26 +1,35 @@
 import React from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { Image } from "react-native";
 import { useRouter } from "expo-router";
+import { YStack, XStack } from "tamagui";
 import AuthButton from "../components/AuthButton";
 
 const AuthLanding: React.FC = () => {
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-      <View style={styles.container}>
-        <View style={styles.logoContainer}>
+    <YStack flex={1} backgroundColor="$background">
+      <YStack
+        flex={1}
+        backgroundColor="$purple9"
+        paddingHorizontal="$4"
+        paddingTop="$10"
+        paddingBottom="$10"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <YStack flex={1} justifyContent="center" alignItems="center">
           <Image
             source={{
               uri: "https://cdn.builder.io/api/v1/image/assets/TEMP/9953241a85c07cd9d7700f15635da9520d300b90",
             }}
-            style={styles.logo}
+            style={{ width: 250, height: 250 }}
             resizeMode="contain"
             accessibilityLabel="Handy Janny Logo"
           />
-        </View>
+        </YStack>
 
-        <View style={styles.buttonContainer}>
+        <YStack width="100%" maxWidth={353} gap="$3">
           <AuthButton
             text="Login"
             variant="primary"
@@ -31,36 +40,10 @@ const AuthLanding: React.FC = () => {
             variant="secondary"
             onPress={() => router.push("/authentication/SignUp")}
           />
-        </View>
-      </View>
-    </View>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#8C52FF",
-    paddingHorizontal: 20,
-    paddingTop: 80,
-    paddingBottom: 80,
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  logoContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  logo: {
-    width: 250,
-    height: 250,
-  },
-  buttonContainer: {
-    width: "100%",
-    maxWidth: 353,
-    gap: 12,
-  },
-});
 
 export default AuthLanding;

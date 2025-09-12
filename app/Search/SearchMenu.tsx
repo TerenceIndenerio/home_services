@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
+import { Alert, TouchableOpacity, StyleSheet } from 'react-native';
+import { YStack, Text } from 'tamagui';
 import { useRouter } from 'expo-router';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebaseConfig'; 
+import { db } from '../../firebaseConfig';
 import SearchBar from './components/SearchBar';
 import PopularSearchSection from './components/PopularSearchSection';
 import TopServiceSection from './components/TopServiceSection';
@@ -53,8 +54,8 @@ const SearchMenu = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchBarContainer}>
+    <YStack style={styles.container}>
+      <YStack style={styles.searchBarContainer}>
         <SearchBar
           Placeholder="Search for services or providers"
           value={searchQuery}
@@ -64,11 +65,11 @@ const SearchMenu = () => {
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch} disabled={loading}>
           <Text style={styles.searchButtonText}>{loading ? 'Searching...' : 'Search'}</Text>
         </TouchableOpacity>
-      </View>
+      </YStack>
 
       <PopularSearchSection />
       <TopServiceSection />
-    </View>
+    </YStack>
   );
 };
 

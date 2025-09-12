@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, RefreshControl, View, Text } from "react-native";
+import { ScrollView, RefreshControl } from "react-native";
 import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { useUserDocumentId } from "../../src/hooks/useUserDocumentId";
 import Loader from "../../src/components/Loader";
+import { YStack, Text } from "tamagui";
 
 import Header from "../../src/features/seeker/components/Header";
 import BalanceCard from "../../src/features/seeker/components/BalanceCard";
@@ -132,36 +133,42 @@ export default function SeekerHomeScreen() {
   
   if (loading) {
     return (
-      <ScrollView style={styles.container}>
-        <Header status="Not Available" />
-        <BalanceCard balance={3200} style={styles.balanceCard} />
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading...</Text>
-        </View>
-      </ScrollView>
+      <YStack flex={1} backgroundColor="$background">
+        <ScrollView>
+          <Header status="Not Available" />
+          <YStack position="absolute" top={100} left={0} right={0} zIndex={1000}>
+            <BalanceCard balance={3200} />
+          </YStack>
+          <YStack justifyContent="center" alignItems="center" marginTop={200}>
+            <Text fontSize="$4" color="$gray11" fontWeight="500">Loading...</Text>
+          </YStack>
+        </ScrollView>
+      </YStack>
     );
   }
 
   return (
-    <>
+    <YStack flex={1} backgroundColor="$background">
       <ScrollView
-        style={styles.container}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#8B5CF6"]}
-            tintColor="#8B5CF6"
+            colors={["$purple9"]}
+            tintColor="$purple9"
           />
         }
       >
         <Header status="Not Available" />
-        <BalanceCard balance={3200} style={styles.balanceCard} />
-        <BookingRequestsList
-          requests={bookingRequests}
-          style={styles.bookingRequestsList}
-          onStatusChange={onRefresh}
-        />
+        <YStack position="absolute" top={100} left={0} right={0} zIndex={1000}>
+          <BalanceCard balance={3200} />
+        </YStack>
+        <YStack marginTop={130}>
+          <BookingRequestsList
+            requests={bookingRequests}
+            onStatusChange={onRefresh}
+          />
+        </YStack>
         <BookingHistoryList
           history={bookingHistory.map((item) => ({
             id: item.id,
@@ -173,34 +180,7 @@ export default function SeekerHomeScreen() {
         />
       </ScrollView>
       <Loader visible={fetching} text="Fetching bookings..." />
-    </>
+    </YStack>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
-  balanceCard: {
-    position: "absolute",
-    top: 100,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-  },
-  bookingRequestsList: {
-    marginTop: 130,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 200,
-  },
-  loadingText: {
-    fontSize: 16,
-    color: "#666",
-    fontWeight: "500",
-  },
-});

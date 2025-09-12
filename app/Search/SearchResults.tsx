@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
   RefreshControl,
+  StyleSheet,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp, useRoute, RouteProp } from '@react-navigation/native';
 import { collection, getDocs, query, where, orderBy, startAt, endAt } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
+import { YStack, Text } from 'tamagui';
 import SearchBar from '@/app/Search/components/SearchBar';
 import SearchResultCard from '@/app/Search/components/SearchResultCard';
 import SearchResultsFilterBar from '@/app/Search/components/SearchResultsFilterBar';
@@ -84,8 +83,8 @@ const SearchResultsScreen = () => {
   }, [searchQuery]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerRow}>
+    <YStack style={styles.container}>
+      <YStack style={styles.headerRow}>
         <TouchableOpacity
           onPress={() => {
             try {
@@ -109,7 +108,7 @@ const SearchResultsScreen = () => {
           onClear={() => setSearchQuery('')}
           onPress={fetchResults}
         />
-      </View>
+      </YStack>
 
       <Text style={styles.resultsCount}>
         {results.length} results for{' '}
@@ -158,7 +157,7 @@ const SearchResultsScreen = () => {
           }
         />
       )}
-    </View>
+    </YStack>
   );
 };
 

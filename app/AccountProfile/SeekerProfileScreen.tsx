@@ -1,13 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import SeekerProfileInfo from '@/src/features/account/components/SeekerProfileInfo';
 import SeekerProfileActions from '@/src/features/account/components/SeekerProfileActions';
+import { YStack, Text } from 'tamagui';
 
 const SeekerProfileScreen: React.FC = () => {
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
+      <YStack style={styles.header}>
         <Image
           source={{ uri: 'https://randomuser.me/api/portraits/men/32.jpg' }}
           style={styles.avatar}
@@ -17,10 +18,10 @@ const SeekerProfileScreen: React.FC = () => {
         <TouchableOpacity style={styles.editBtn}>
           <Icon name="pencil" size={18} color="#8F5CFF" />
         </TouchableOpacity>
-      </View>
+      </YStack>
       <SeekerProfileInfo />
       <SeekerProfileActions />
-      
+
     </ScrollView>
   );
 };

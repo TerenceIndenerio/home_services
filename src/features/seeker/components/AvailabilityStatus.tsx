@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { YStack, Text } from 'tamagui';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 interface AvailabilityStatusProps {
@@ -11,18 +12,20 @@ const AvailabilityStatus: React.FC<AvailabilityStatusProps> = ({ status, onToggl
   const isAvailable = status === 'Available';
   
   return (
-    <TouchableOpacity 
-      style={[styles.container, isAvailable ? styles.available : styles.notAvailable]} 
+    <TouchableOpacity
+      style={[styles.container, isAvailable ? styles.available : styles.notAvailable]}
       onPress={onToggle}
     >
-      <FontAwesome 
-        name={isAvailable ? 'check-circle' : 'times-circle'} 
-        size={16} 
-        color={isAvailable ? '#4CAF50' : '#F44336'} 
-      />
-      <Text style={[styles.text, isAvailable ? styles.availableText : styles.notAvailableText]}>
-        {status}
-      </Text>
+      <YStack style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <FontAwesome
+          name={isAvailable ? 'check-circle' : 'times-circle'}
+          size={16}
+          color={isAvailable ? '#4CAF50' : '#F44336'}
+        />
+        <Text style={[styles.text, isAvailable ? styles.availableText : styles.notAvailableText]}>
+          {status}
+        </Text>
+      </YStack>
     </TouchableOpacity>
   );
 };

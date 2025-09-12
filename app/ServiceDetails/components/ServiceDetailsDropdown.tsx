@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { TouchableOpacity, LayoutAnimation, Platform, UIManager, StyleSheet } from 'react-native';
+import { YStack, Text } from 'tamagui';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -27,34 +28,34 @@ const ServiceDetailsDropdown: React.FC<ServiceDetailsDropdownProps> = ({
   };
 
   return (
-    <View style={styles.card}>
+    <YStack style={styles.card}>
       <TouchableOpacity style={styles.header} onPress={handleToggle} activeOpacity={0.8}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <YStack style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialIcons name="miscellaneous-services" size={20} color="#8C52FF" style={{ marginRight: 8 }} />
           <Text style={styles.title}>Service Details</Text>
-        </View>
+        </YStack>
         <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={22} color="#8C52FF" />
       </TouchableOpacity>
       {open && (
-        <View style={styles.content}>
-          <View style={styles.itemRow}>
+        <YStack style={styles.content}>
+          <YStack style={styles.itemRow}>
             <MaterialIcons name="build" size={18} color="#8C52FF" style={styles.icon} />
             <Text style={styles.label}>Service:</Text>
             <Text style={styles.value}>{service}</Text>
-          </View>
-          <View style={styles.itemRow}>
+          </YStack>
+          <YStack style={styles.itemRow}>
             <MaterialIcons name="category" size={18} color="#8C52FF" style={styles.icon} />
             <Text style={styles.label}>Category:</Text>
             <Text style={styles.value}>{category}</Text>
-          </View>
-          <View style={[styles.itemRow, { alignItems: 'flex-start' }]}> 
+          </YStack>
+          <YStack style={[styles.itemRow, { alignItems: 'flex-start' }]}>
             <MaterialIcons name="description" size={18} color="#8C52FF" style={styles.icon} />
             <Text style={styles.label}>Description:</Text>
             <Text style={[styles.value, { flex: 1 }]}>{description}</Text>
-          </View>
-        </View>
+          </YStack>
+        </YStack>
       )}
-    </View>
+    </YStack>
   );
 };
 

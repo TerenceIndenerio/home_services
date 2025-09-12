@@ -1,78 +1,74 @@
 import * as React from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  ViewStyle,
-  TextInputProps,
-} from "react-native";
+import { YStack, Text, Input, XStack } from "tamagui";
+import { Ionicons } from "@expo/vector-icons";
 
-interface InputFieldProps extends TextInputProps {
+interface InputFieldProps {
   label: string;
   required?: boolean;
-  style?: ViewStyle;
+  value?: string;
+  onChangeText?: (text: string) => void;
+  secureTextEntry?: boolean;
+  placeholder?: string;
+  iconName?: keyof typeof Ionicons.glyphMap;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
   label,
   required = false,
-  style,
-  ...textInputProps
+  value,
+  onChangeText,
+  secureTextEntry = false,
+  placeholder,
+  iconName,
 }) => {
   return (
-    <View style={[styles.container, style]}>
-      <View style={styles.labelContainer}>
-        <Text style={styles.labelText}>
-          {label}
-          {required && <Text style={styles.requiredIndicator}> *</Text>}
-        </Text>
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder={label}
-        placeholderTextColor="#A0A0A0"
-        {...textInputProps}
-      />
-    </View>
+    <YStack width="100%" marginBottom="$4">
+      <Text
+        fontSize="$4"
+        color="$gray11"
+        fontWeight="500"
+        marginBottom="$1"
+      >
+        {label}
+        {required && <Text color="$purple9" fontWeight="900"> *</Text>}
+      </Text>
+      <XStack
+        alignItems="center"
+        borderColor="$gray6"
+        borderWidth={1.5}
+        borderRadius="$3"
+        backgroundColor="$gray2"
+        shadowColor="$shadowColor"
+        shadowOffset={{ width: 0, height: 1 }}
+        shadowOpacity={0.04}
+        shadowRadius={4}
+        elevation={1}
+      >
+        {iconName && (
+          <Ionicons
+            name={iconName}
+            size={20}
+            color="$gray10"
+            style={{ marginLeft: 12 }}
+          />
+        )}
+        <Input
+          flex={1}
+          size="$4"
+          padding="$3"
+          fontSize="$4"
+          color="$gray12"
+          backgroundColor="transparent"
+          borderWidth={0}
+          placeholder={placeholder || label}
+          placeholderTextColor="$gray8"
+          value={value}
+          onChangeText={onChangeText}
+          secureTextEntry={secureTextEntry}
+        />
+      </XStack>
+    </YStack>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    width: '100%',
-    flexDirection: 'column',
-    marginBottom: 16,
-  },
-  labelContainer: {
-    marginBottom: 6,
-  },
-  labelText: {
-    fontFamily: 'Inter',
-    fontSize: 15,
-    color: '#444',
-    fontWeight: '500',
-  },
-  requiredIndicator: {
-    fontWeight: '900',
-    color: '#8C52FF',
-  },
-  input: {
-    borderColor: '#E0E0E0',
-    borderWidth: 1.5,
-    borderRadius: 10,
-    padding: 14,
-    fontSize: 15,
-    fontFamily: 'Inter',
-    color: '#222',
-    backgroundColor: '#FAFAFA',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-});
 
 export default InputField;

@@ -22,7 +22,7 @@ import { useAuth } from '../../../src/features/auth/context/authContext';
 import { useRouter } from "expo-router";
 
 const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {
-  const { userDocumentId } = useAuth();
+  const { state } = useAuth();
   const [status, setStatus] = useState<"idle" | "loading" | "sent">("idle");
   const [modalVisible, setModalVisible] = useState(false);          
   const [successVisible, setSuccessVisible] = useState(false);       
@@ -44,7 +44,7 @@ const OnTheWayButton = ({ bookingData }: { bookingData: any }) => {
       : new Date(),
   });
 
-  const currentUserId = userDocumentId;
+  const currentUserId = state.userDocumentId;
   const router = useRouter();
 
   useEffect(() => {

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, TextInput, ScrollView, RefreshControl, StatusBar } from 'react-native';
+import { FlatList, ActivityIndicator, RefreshControl, StatusBar } from 'react-native';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 import { app } from '../../firebaseConfig';
 import { useLocalSearchParams } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import Colors from '../constants/Colors';
+import { YStack, XStack, Text, Button, Input, ScrollView, Card, Image, Theme, Select, Adapt, Sheet } from 'tamagui';
 import ServiceCard from '../../src/features/home/components/ServiceCard';
 
 const db = getFirestore(app);
@@ -24,7 +24,7 @@ const CategoryUsersScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchName, setSearchName] = useState('');
-  const [minRating, setMinRating] = useState<number | null>(null);
+  const [minRating, setMinRating] = useState<string>("any");
   const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'experience'>('relevance');
 
   const exampleServicesArr = typeof exampleServices === 'string' ? exampleServices.split(',') : [];
@@ -77,10 +77,11 @@ const CategoryUsersScreen: React.FC = () => {
         return fullName.includes(searchName.trim().toLowerCase());
       });
     }
-    if (minRating) {
+    if (minRating !== "any") {
+      const min = parseInt(minRating);
       filtered = filtered.filter(user => {
         const rating = Number(user.profile?.ratings) || 0;
-        return rating >= minRating;
+        return rating >= min;
       });
     }
     if (sortBy === 'rating') {
@@ -102,252 +103,179 @@ const CategoryUsersScreen: React.FC = () => {
 
   const handleClearFilters = () => {
     setSearchName('');
-    setMinRating(null);
+    setMinRating("any");
     setSortBy('relevance');
   };
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Ionicons name="people" size={48} color={Colors.primary} style={{ marginBottom: 16 }} />
-        <ActivityIndicator size="large" color={Colors.primary} />
-        <Text style={styles.loadingText}>Finding job seekers...</Text>
-      </View>
+      <YStack flex={1} justifyContent="center" alignItems="center" backgroundColor="$background">
+        <Ionicons name="people" size={48} color="$color" style={{ marginBottom: 16 }} />
+        <ActivityIndicator size="large" color="$color" />
+        <Text fontSize="$4" color="$color" marginTop="$2">Finding job seekers...</Text>
+      </YStack>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.replace('/')} style={styles.goBackButton}>
-        <Ionicons name="arrow-back" size={24} color={Colors.text} />
-      </TouchableOpacity>
-      
-      <View style={styles.headerWrapper}>
-        <Text style={styles.headerText}>Job Seekers for {categoryName}</Text>
-      </View>
-      
-      <View style={styles.searchBarWrapper}>
-        <Ionicons name="search-outline" size={22} color={Colors.primary} style={{ marginLeft: 12, marginRight: 6 }} />
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search by name"
-          placeholderTextColor={Colors.textSecondary}
-          value={searchName}
-          onChangeText={setSearchName}
-          returnKeyType="search"
+    <Theme name="light">
+      <YStack flex={1} backgroundColor="$background" paddingTop={(StatusBar.currentHeight || 0) + 16}>
+        <Button
+          position="absolute"
+          top={(StatusBar.currentHeight || 0) + 16}
+          left="$4"
+          zIndex={10}
+          size="$3"
+          circular
+          backgroundColor="$background"
+          borderColor="$borderColor"
+          onPress={() => router.replace('/')}
+        >
+          <Ionicons name="arrow-back" size={24} color="$color" />
+        </Button>
+
+        <YStack paddingHorizontal="$4" paddingTop="$5" paddingBottom="$3">
+          <Text fontSize="$7" fontWeight="bold" color="$color" textAlign="center">
+            Job Seekers for {categoryName}
+          </Text>
+        </YStack>
+
+        <XStack
+          alignItems="center"
+          backgroundColor="$gray2"
+          marginHorizontal="$4"
+          borderRadius="$4"
+          paddingVertical="$2"
+          marginBottom="$3"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
+          <Ionicons name="search-outline" size={22} color="$color" style={{ marginLeft: 12, marginRight: 6 }} />
+          <Input
+            flex={1}
+            fontSize="$4"
+            color="$color"
+            placeholder="Search by name"
+            placeholderTextColor="$color"
+            value={searchName}
+            onChangeText={setSearchName}
+            returnKeyType="search"
+            borderWidth={0}
+            backgroundColor="transparent"
+          />
+          {searchName.length > 0 && (
+            <Button
+              size="$2"
+              circular
+              backgroundColor="transparent"
+              onPress={() => setSearchName('')}
+              marginRight="$3"
+            >
+              <Ionicons name="close-circle" size={20} color="$color" />
+            </Button>
+          )}
+        </XStack>
+
+        <XStack paddingHorizontal="$4" marginBottom="$4" gap="$3" alignItems="center">
+          <Select value={minRating} onValueChange={setMinRating}>
+            <Select.Trigger width={120} backgroundColor="$gray2" borderColor="$borderColor">
+              <Select.Value placeholder="Rating" />
+            </Select.Trigger>
+            <Select.Content zIndex={200000}>
+              <Select.ScrollUpButton />
+              <Select.Viewport>
+                <Select.Group>
+                  <Select.Label>Minimum Rating</Select.Label>
+                  <Select.Item value="any" index={0}>
+                    <Select.ItemText>Any</Select.ItemText>
+                    <Select.ItemIndicator marginLeft="auto">
+                      <Ionicons name="checkmark" size={16} />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  {RATING_FILTERS.map((r, index) => (
+                    <Select.Item key={r} value={r.toString()} index={index + 1}>
+                      <Select.ItemText>Min {r}+</Select.ItemText>
+                      <Select.ItemIndicator marginLeft="auto">
+                        <Ionicons name="checkmark" size={16} />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Viewport>
+              <Select.ScrollDownButton />
+            </Select.Content>
+          </Select>
+
+          <Select value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
+            <Select.Trigger width={120} backgroundColor="$gray2" borderColor="$borderColor">
+              <Select.Value placeholder="Sort by" />
+            </Select.Trigger>
+            <Select.Content zIndex={200000}>
+              <Select.ScrollUpButton />
+              <Select.Viewport>
+                <Select.Group>
+                  <Select.Label>Sort By</Select.Label>
+                  {SORT_OPTIONS.map((opt, index) => (
+                    <Select.Item key={opt.key} value={opt.key} index={index}>
+                      <Select.ItemText>{opt.label}</Select.ItemText>
+                      <Select.ItemIndicator marginLeft="auto">
+                        <Ionicons name="checkmark" size={16} />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Viewport>
+              <Select.ScrollDownButton />
+            </Select.Content>
+          </Select>
+
+          <Button
+            size="$3"
+            backgroundColor="$background"
+            borderColor="$color"
+            onPress={handleClearFilters}
+            icon={<Ionicons name="close" size={16} color="$color" />}
+          >
+            <Text fontSize="$2" color="$color">Clear</Text>
+          </Button>
+        </XStack>
+
+        <FlatList
+          data={getFilteredUsers()}
+          numColumns={2}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
+          style={{ flex: 1 }}
+          renderItem={({ item }) => (
+            <YStack width="48%" margin="$2" height={220}>
+              <ServiceCard
+                imageUrl={item.profile?.profilePictureUrl || "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=183&q=80"}
+                title={item.profile?.jobTitle || "Service Provider"}
+                provider={`By ${item.firstName || ''} ${item.lastName || ''}`.trim()}
+                rating={item.profile?.ratings?.toString() || "N/A"}
+                onPress={() => router.push({ pathname: "/ViewProfile/[id]", params: { id: item.id } })}
+              />
+            </YStack>
+          )}
+          ListEmptyComponent={
+            <YStack flex={1} justifyContent="center" alignItems="center" paddingVertical="$10">
+              <Ionicons name="search" size={48} color="$color" style={{ marginBottom: 16 }} />
+              <Text fontSize="$4" color="$color" textAlign="center" fontWeight="500">
+                No job seekers found for this category.
+              </Text>
+              <Text fontSize="$3" color="$color" textAlign="center" marginTop="$2">
+                Try adjusting your search or filters.
+              </Text>
+            </YStack>
+          }
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
-        {searchName.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchName('')}>
-            <Ionicons name="close-circle" size={20} color={Colors.textSecondary} style={{ marginRight: 12 }} />
-          </TouchableOpacity>
-        )}
-      </View>
-      
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChipBar}>
-        <View style={styles.filterChipRow}>
-          {RATING_FILTERS.map(r => (
-            <TouchableOpacity
-              key={r}
-              style={[styles.filterChip, minRating === r && styles.filterChipActive]}
-              onPress={() => setMinRating(minRating === r ? null : r)}
-            >
-              <Ionicons name="star" size={16} color={minRating === r ? Colors.background : Colors.secondary} style={{ marginRight: 3 }} />
-              <Text style={[styles.filterChipText, minRating === r && { color: Colors.background }]}>Min {r}+</Text>
-            </TouchableOpacity>
-          ))}
-          {SORT_OPTIONS.map(opt => (
-            <TouchableOpacity
-              key={opt.key}
-              style={[styles.filterChip, sortBy === opt.key && styles.filterChipActive]}
-              onPress={() => setSortBy(opt.key as any)}
-            >
-              <Ionicons name={opt.icon as any} size={16} color={sortBy === opt.key ? Colors.background : Colors.primary} style={{ marginRight: 3 }} />
-              <Text style={[styles.filterChipText, sortBy === opt.key && { color: Colors.background }]}>{opt.label}</Text>
-            </TouchableOpacity>
-          ))}
-          <TouchableOpacity style={styles.clearChip} onPress={handleClearFilters}>
-            <Ionicons name="close" size={16} color={Colors.primary} style={{ marginRight: 3 }} />
-            <Text style={styles.clearChipText}>Clear</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-      
-      <FlatList
-        data={getFilteredUsers()}
-        numColumns={2}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.flatListContent}
-        style={styles.flatList}
-        renderItem={({ item }) => (
-          <View style={styles.cardWrapper}>
-            <ServiceCard
-              imageUrl={item.profile?.profilePictureUrl || "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=183&q=80"}
-              title={item.profile?.jobTitle || "Service Provider"}
-              provider={`By ${item.firstName || ''} ${item.lastName || ''}`.trim()}
-              rating={item.profile?.ratings?.toString() || "N/A"}
-              onPress={() => router.push({ pathname: "/ViewProfile/[id]", params: { id: item.id } })}
-            />
-          </View>
-        )}
-        ListEmptyComponent={
-          <View style={styles.emptyStateWrapper}>
-            <Ionicons name="search" size={48} color={Colors.textSecondary} style={{ marginBottom: 16 }} />
-            <Text style={styles.emptyText}>No job seekers found for this category.</Text>
-            <Text style={[styles.emptyText, { fontSize: 14, marginTop: 8 }]}>Try adjusting your search or filters.</Text>
-          </View>
-        }
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
-    </View>
+      </YStack>
+    </Theme>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    paddingTop: (StatusBar.currentHeight || 0) + 16,
-    paddingHorizontal: 0,
-  },
-  goBackButton: {
-    position: 'absolute',
-    top: (StatusBar.currentHeight || 0) + 16,
-    left: 16,
-    zIndex: 10,
-    padding: 8,
-    backgroundColor: Colors.background,
-    borderRadius: 20,
-    elevation: 2,
-    shadowColor: Colors.darkGray,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  headerWrapper: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.text,
-    textAlign: 'center',
-  },
-  searchBarWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.lightGray,
-    marginHorizontal: 20,
-    borderRadius: 16,
-    paddingVertical: 8,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    shadowColor: Colors.darkGray,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  searchBar: {
-    flex: 1,
-    fontSize: 16,
-    color: Colors.text,
-    paddingVertical: 8,
-  },
-  filterChipBar: {
-    marginBottom: 20,
-  },
-  filterChipRow: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    gap: 8,
-  },
-  filterChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: Colors.lightGray,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    minWidth: 70,
-    height: 32,
-    justifyContent: 'center',
-  },
-  filterChipActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  filterChipText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: Colors.textSecondary,
-  },
-  clearChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: Colors.background,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.primary,
-    minWidth: 70,
-    height: 32,
-    justifyContent: 'center',
-  },
-  clearChipText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: Colors.primary,
-  },
-  flatList: {
-    flex: 1,
-  },
-  flatListContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  cardWrapper: {
-    width: '48%',
-    margin: 8,
-    height: 220,
-  },
-  emptyStateWrapper: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.background,
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: Colors.textSecondary,
-    fontWeight: '500',
-  },
-});
-
-export default CategoryUsersScreen; 
+export default CategoryUsersScreen;

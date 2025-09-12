@@ -9,10 +9,11 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { AuthProvider } from "../src/features/auth/context/authContext";
 import { useColorScheme } from "../src/utils/useColorScheme";
-import { Provider } from "@ant-design/react-native";
+import { AuthProvider } from "../src/features/auth/context/authContext";
 import AuthGuard from "./authentication/AuthGuard";
+import { TamaguiProvider } from "tamagui";
+import config from "../tamagui.config";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -49,7 +50,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <Provider>
+    <TamaguiProvider config={config}>
       <AuthProvider>
         <ThemeProvider value={DefaultTheme}>
           <AuthGuard>
@@ -174,9 +175,9 @@ function RootLayoutNav() {
               options={{ headerShown: false }}
             />
           </Stack>
-          </AuthGuard>
-        </ThemeProvider>
-      </AuthProvider>
-    </Provider>
+        </AuthGuard>
+      </ThemeProvider>
+    </AuthProvider>
+    </TamaguiProvider>
   );
 }

@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import { YStack, Text, Image } from "tamagui";
 import { router } from "expo-router";
 
 type Booking = {
@@ -17,14 +18,14 @@ type BookedJobsCardProps = {
 const BookedJobsCard: React.FC<BookedJobsCardProps> = ({ job }) => {
   return (
     <TouchableOpacity onPress={() => router.push(`Jobs/booking/${job.id}`)}>
-      <View style={styles.card}>
+      <YStack style={styles.card}>
         <Image
           source={{
             uri: "https://randomuser.me/api/portraits/men/36.jpg",
           }}
           style={styles.avatar}
         />
-        <View style={styles.info}>
+        <YStack style={styles.info}>
           <Text style={styles.title}>{job.jobTitle}</Text>
           <Text style={styles.detail}>
             📅{" "}
@@ -33,8 +34,8 @@ const BookedJobsCard: React.FC<BookedJobsCardProps> = ({ job }) => {
               : "No date"}
           </Text>
           <Text style={styles.detail}>📍 {job.address}</Text>
-        </View>
-      </View>
+        </YStack>
+      </YStack>
     </TouchableOpacity>
   );
 };

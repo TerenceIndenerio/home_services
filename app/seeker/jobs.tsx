@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { YStack, Text } from 'tamagui';
 import JobSearchBar from '@/app/Jobs/components/JobSearchBar';
 import JobTabBar from '@/app/Jobs/components/JobTabBar';
 import JobsList from '@/app/Jobs/components/JobList';
@@ -72,8 +72,8 @@ export default function JobsScreen() {
   });
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Jobs</Text>
+    <YStack flex={1} backgroundColor="$background" paddingHorizontal="$3">
+      <Text fontSize="$8" fontWeight="bold" color="$purple9" marginTop="$6" marginBottom="$3">Jobs</Text>
       <JobSearchBar />
       <JobTabBar activeTab={activeTab} setActiveTab={setActiveTab} />
       <JobsList
@@ -82,11 +82,6 @@ export default function JobsScreen() {
         refreshing={refreshing}
         onJobPress={handleJobPress}
       />
-    </View>
+    </YStack>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 12 },
-  header: { fontSize: 32, fontWeight: 'bold', color: '#9B5DE5', marginTop: 24, marginBottom: 12 },
-});

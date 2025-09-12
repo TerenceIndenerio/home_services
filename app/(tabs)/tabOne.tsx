@@ -24,7 +24,7 @@ const screenWidth = Dimensions.get("window").width;
 
 const JobsScreen: React.FC = () => {
    const router = useRouter();
-   const { user } = useAuth();
+   const { state } = useAuth();
    const [activeTab, setActiveTab] = React.useState("Pending");
    const [jobs, setJobs] = React.useState<any[]>([]);
    const [loading, setLoading] = React.useState(true);
@@ -39,7 +39,7 @@ const JobsScreen: React.FC = () => {
   const tabs = ["Pending", "Accepted", "Ongoing", "Done", "Decline"];
 
   const fetchJobs = React.useCallback(() => {
-    if (!user?.uid) {
+    if (!state.user?.uid) {
       console.log("No user logged in, skipping fetch");
       setLoading(false);
       return;
@@ -50,7 +50,7 @@ const JobsScreen: React.FC = () => {
 
     const jobsQuery = query(
       collection(db, "bookings"),
-      where("userId", "==", user.uid),
+      where("userId", "==", state.user.uid),
       where("status", "==", statusFilter)
     );
 
@@ -73,7 +73,7 @@ const JobsScreen: React.FC = () => {
     );
 
     return unsubscribe;
-  }, [activeTab, user?.uid]);
+  }, [activeTab, state.user?.uid]);
 
   React.useEffect(() => {
     const unsubscribe = fetchJobs();
