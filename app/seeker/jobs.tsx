@@ -12,6 +12,7 @@ export default function JobsScreen() {
   const [activeTab, setActiveTab] = useState('Jobs For You');
   const [refreshing, setRefreshing] = useState(false);
   const [bookings, setBookings] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<any[]>([]);
   const router = useRouter();
 
   const fetchBookings = async () => {
@@ -47,29 +48,82 @@ export default function JobsScreen() {
     }
   };
 
+  const getTimeAgo = (timestamp: number) => {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    return 'Just now';
+  };
+
+  const fetchJobs = async () => {
+    try {
+      const q = query(collection(db, "jobs"), where("status", "==", "open"));
+      const querySnapshot = await getDocs(q);
+      const fetchedJobs: any[] = [];
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        fetchedJobs.push({
+          id: doc.id,
+          title: data.jobTitle ?? 'Untitled Job',
+          description: data.description ?? 'No description',
+          address: data.location ?? 'No location',
+          amount: data.pay ?? 0,
+          location: data.location ?? 'No location',
+          time: data.createdAt?.seconds
+            ? getTimeAgo(data.createdAt.seconds * 1000)
+            : 'No date',
+          status: data.status ?? 'open',
+          jobType: data.jobType ?? 'Full Time',
+          skills: data.skills ?? [],
+        });
+      });
+
+      setJobs(fetchedJobs);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+    }
+  };
+
   useEffect(() => {
     fetchBookings();
+    fetchJobs();
   }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchBookings().finally(() => setRefreshing(false));
-  }, []);
+    if (activeTab === 'Find Jobs') {
+      fetchJobs().finally(() => setRefreshing(false));
+    } else {
+      fetchBookings().finally(() => setRefreshing(false));
+    }
+  }, [activeTab]);
 
   const handleJobPress = (job: any) => {
     router.push({ pathname: '/Jobs/JobDetails', params: { job: JSON.stringify(job) } });
   };
 
-  const filteredBookings = bookings.filter(booking => {
-    if (activeTab === 'Jobs For You') {
-      return booking.status === 'pending';
-    } else if (activeTab === 'Accepted Jobs') {
-      return booking.status === 'accepted';
-    } else if (activeTab === 'On Going Job') {
-      return booking.status === 'ongoing';
+  const getDisplayedItems = () => {
+    if (activeTab === 'Find Jobs') {
+      return jobs;
     }
-    return false;
-  });
+    return bookings.filter(booking => {
+      if (activeTab === 'Jobs For You') {
+        return booking.status === 'pending';
+      } else if (activeTab === 'Accepted Jobs') {
+        return booking.status === 'accepted';
+      } else if (activeTab === 'On Going Job') {
+        return booking.status === 'ongoing';
+      }
+      return false;
+    });
+  };
 
   return (
     <YStack flex={1} backgroundColor="$background" paddingHorizontal="$3">
@@ -77,7 +131,7 @@ export default function JobsScreen() {
       <JobSearchBar />
       <JobTabBar activeTab={activeTab} setActiveTab={setActiveTab} />
       <JobsList
-        jobs={filteredBookings}
+        jobs={getDisplayedItems()}
         onRefresh={onRefresh}
         refreshing={refreshing}
         onJobPress={handleJobPress}

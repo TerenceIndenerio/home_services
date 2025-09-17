@@ -36,7 +36,15 @@ const JobsScreen: React.FC = () => {
     const fabScaleAnim = React.useRef(new Animated.Value(1)).current;
     const dropdownAnim = React.useRef(new Animated.Value(0)).current;
 
-  const tabs = ["Pending", "Accepted", "Ongoing", "Done", "Decline"];
+  const tabs = [
+   { label: "Pending", icon: "time-outline" },
+   { label: "Accepted", icon: "checkmark-circle-outline" },
+   { label: "Ongoing", icon: "checkmark-circle-outline" },
+   { label: "Done", icon: "checkmark-done-outline" },
+   { label: "Decline", icon: "close-circle-outline" }
+ ];
+
+   const activeTabData = tabs.find(tab => tab.label === activeTab);
 
   const fetchJobs = React.useCallback(() => {
     if (!state.user?.uid) {
@@ -145,7 +153,10 @@ const JobsScreen: React.FC = () => {
             onPress={toggleDropdown}
             activeOpacity={0.8}
           >
-            <Text style={styles.dropdownButtonText}>{activeTab}</Text>
+            <View style={styles.dropdownButtonContent}>
+              {activeTabData && <Ionicons name={activeTabData.icon as any} size={20} color="#8C52FF" style={styles.dropdownButtonIcon} />}
+              <Text style={styles.dropdownButtonText}>{activeTab}</Text>
+            </View>
             <Animated.View style={[
               styles.dropdownArrow,
               {
@@ -190,22 +201,25 @@ const JobsScreen: React.FC = () => {
             >
               {tabs.map((tab) => (
                 <TouchableOpacity
-                  key={tab}
+                  key={tab.label}
                   style={[
                     styles.dropdownItem,
-                    activeTab === tab && styles.dropdownItemActive
+                    activeTab === tab.label && styles.dropdownItemActive
                   ]}
-                  onPress={() => handleTabPress(tab)}
+                  onPress={() => handleTabPress(tab.label)}
                 >
-                  <Text
-                    style={[
-                      styles.dropdownItemText,
-                      activeTab === tab && styles.dropdownItemTextActive
-                    ]}
-                  >
-                    {tab}
-                  </Text>
-                  {activeTab === tab && (
+                  <View style={styles.dropdownItemContent}>
+                    <Ionicons name={tab.icon as any} size={20} color={activeTab === tab.label ? "#8C52FF" : "#666"} />
+                    <Text
+                      style={[
+                        styles.dropdownItemText,
+                        activeTab === tab.label && styles.dropdownItemTextActive
+                      ]}
+                    >
+                      {tab.label}
+                    </Text>
+                  </View>
+                  {activeTab === tab.label && (
                     <Ionicons name="checkmark" size={20} color="#8C52FF" />
                   )}
                 </TouchableOpacity>
@@ -409,6 +423,13 @@ const styles = StyleSheet.create({
      shadowRadius: 2,
      elevation: 2,
    },
+   dropdownButtonContent: {
+     flexDirection: "row",
+     alignItems: "center",
+   },
+   dropdownButtonIcon: {
+     marginRight: 8,
+   },
    dropdownButtonText: {
      fontSize: 16,
      fontWeight: "600",
@@ -442,6 +463,10 @@ const styles = StyleSheet.create({
      paddingHorizontal: 20,
      borderBottomWidth: 1,
      borderBottomColor: "#f0f0f0",
+   },
+   dropdownItemContent: {
+     flexDirection: "row",
+     alignItems: "center",
    },
    dropdownItemActive: {
      backgroundColor: "#f8f9ff",
